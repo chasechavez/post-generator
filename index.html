@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Slide Gen">
-<meta name="theme-color" content="#141414">
+<meta name="theme-color" content="#0A0A0A">
 <title>Chase Chavez — Post Slide Generator</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -14,9 +14,9 @@
 
   :root{
     --athletic-blue:#005F87;
-    --performance-teal:#00A3A3;
+    --performance-teal:#00B8B8;
     --warm-slate:#565A5C;
-    --near-black:#141414;
+    --near-black:#0A0A0A;
     --off-white:#F5F4F2;
   }
   *{box-sizing:border-box;}
@@ -175,7 +175,8 @@
   .s-cover .brand-wordmark{color:#fff;opacity:0.9;}
   .s-cover .headline{font-family:'Barlow Condensed';font-weight:700;font-size:52px;line-height:1.03;text-transform:uppercase;color:#fff;white-space:pre-wrap;}
   .s-cover .headline .accent{color:var(--performance-teal);}
-  .s-cover .tagline{font-family:'Barlow Condensed';font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--warm-slate);}
+  .s-cover .tagline{font-family:'Barlow Condensed';font-style:italic;font-size:16px;letter-spacing:0.5px;color:var(--performance-teal);}
+  .tagline-text{text-transform:none !important;font-style:italic;}
 
   .s-insight{background:var(--off-white);padding:56px 48px;justify-content:center;}
   .s-insight .rule{display:flex;gap:6px;margin-bottom:24px;}
@@ -351,107 +352,107 @@ const nodeMarkWhite = `<svg class="node-mark-sm" viewBox="0 0 100 100" xmlns="ht
   <line x1="50" y1="50" x2="50" y2="12" stroke="#fff" stroke-width="4"/>
   <line x1="50" y1="50" x2="82" y2="68" stroke="#fff" stroke-width="4"/>
   <line x1="50" y1="50" x2="18" y2="68" stroke="#fff" stroke-width="4"/>
-  <circle cx="50" cy="50" r="9" fill="#00A3A3"/>
-  <circle cx="50" cy="12" r="6" fill="#fff"/>
-  <circle cx="82" cy="68" r="6" fill="#fff"/>
-  <circle cx="18" cy="68" r="6" fill="#fff"/>
+  <circle cx="50" cy="12" r="8.4" fill="#00B8B8"/>
+  <circle cx="82" cy="68" r="8.4" fill="#00B8B8"/>
+  <circle cx="18" cy="68" r="8.4" fill="#00B8B8"/>
+  <circle cx="50" cy="50" r="6" fill="#fff"/>
 </svg>`;
 
 // field schema per layout: [id, label, type ('text'|'textarea'|'image'), default value]
 const schemas = {
   cover: [
-    ['title','Headline (use \\n for line breaks)','textarea','WHAT WE KNOW ABOUT\\nHAMSTRING\\nREINJURY'],
-    ['accent','Accent line (teal, optional)','text','REINJURY'],
+    ['title','Headline (use \\n for line breaks)','textarea',''],
+    ['accent','Accent line (teal, optional)','text',''],
     ['tagline','Bottom tagline','text','Build what stays.'],
     ['wordmark','Wordmark','text','Chase Chavez']
   ],
   insight: [
-    ['headline','Headline','textarea','ISOMETRIC LOADING\\nCHANGES PAIN RESPONSE'],
-    ['body','Body text','textarea','Heavy, slow isometric holds reduced tendon pain immediately post-session in patellar tendinopathy.']
+    ['headline','Headline','textarea',''],
+    ['body','Body text','textarea','']
   ],
   breakdown: [
     ['handle','Small handle/label','text','@chasechavezdpt'],
-    ['title','Title bar headline','textarea','WHY LOAD MONITORING CHANGES OUTCOMES'],
-    ['b1','Bullet 1','text','Establishes an individual baseline rather than a population norm.'],
-    ['b2','Bullet 2','text','Flags spikes in acute-to-chronic workload before symptoms appear.'],
-    ['b3','Bullet 3','text','Gives coaches a shared number to plan around, not just a feeling.'],
-    ['b4','Bullet 4','text','Doesn\'t replace clinical judgment — it informs it.']
+    ['title','Title bar headline','textarea',''],
+    ['b1','Bullet 1','text',''],
+    ['b2','Bullet 2','text',''],
+    ['b3','Bullet 3','text',''],
+    ['b4','Bullet 4','text','']
   ],
   bold: [
-    ['headline','Bold claim','textarea','STRENGTH ALONE\\nDOESN\'T PREDICT\\nRETURN-TO-SPORT SUCCESS'],
-    ['sub','Supporting context','textarea','Confidence, movement quality under fatigue, and sport-specific exposure matter just as much.'],
-    ['wordmark','Wordmark','text','CHASE CHAVEZ · DPT · SCS']
+    ['headline','Bold claim','textarea',''],
+    ['sub','Supporting context','textarea',''],
+    ['wordmark','Wordmark','text','CHASE CHAVEZ · PT · DPT · SCS']
   ],
   whyitmatters: [
-    ['title','Headline','textarea','WHY "CLEARED"\\nISN\'T "READY"'],
-    ['b1','Bullet 1','text','Medical clearance checks tissue healing, not sport readiness.'],
-    ['b2','Bullet 2','text','Strength symmetry doesn\'t guarantee movement quality under fatigue.'],
-    ['b3','Bullet 3','text','Psychological readiness is a measurable variable, not an afterthought.'],
-    ['b4','Bullet 4','text','The gap between cleared and ready is where reinjury lives.'],
+    ['title','Headline','textarea',''],
+    ['b1','Bullet 1','text',''],
+    ['b2','Bullet 2','text',''],
+    ['b3','Bullet 3','text',''],
+    ['b4','Bullet 4','text',''],
     ['wordmark','Bottom line','text','Build what stays.']
   ],
   quote: [
-    ['quote','Quote text','textarea','"Don\'t mistake emergent movement strategies for faulty ones. The body often chooses efficiency."'],
-    ['attribution','Attribution','text','— Chase Chavez, DPT, SCS']
+    ['quote','Quote text','textarea',''],
+    ['attribution','Attribution','text','— Chase Chavez, PT · DPT · SCS']
   ],
   beforeafter: [
-    ['title','Protocol name','text','HAMSTRING RETURN-TO-SPRINT'],
-    ['beforeP1','Before — point 1','textarea','Cleared at 90% strength symmetry, back to full training.'],
-    ['beforeP2','Before — point 2','textarea','No exposure to max-velocity sprinting before return.'],
-    ['afterP1','After — point 1','textarea','Progressive sprint exposure built into the final phase.'],
-    ['afterP2','After — point 2','textarea','Reinjury rate dropped across the tracked cohort.']
+    ['title','Protocol name','text',''],
+    ['beforeP1','Before — point 1','textarea',''],
+    ['beforeP2','Before — point 2','textarea',''],
+    ['afterP1','After — point 1','textarea',''],
+    ['afterP2','After — point 2','textarea','']
   ],
   mistake: [
-    ['title','Headline','textarea','A COMMON MISTAKE IN\\nACL REHAB TIMELINES'],
-    ['common','Common approach','textarea','Clearing athletes based on a fixed calendar timeline (e.g. "9 months").'],
-    ['better','Better approach','textarea','Clearing based on objective criteria — strength, hop symmetry, psychological readiness.'],
-    ['why','Why it matters','textarea','Tissue healing and neuromuscular readiness don\'t run on the same clock for every athlete.']
+    ['title','Headline','textarea',''],
+    ['common','Common approach','textarea',''],
+    ['better','Better approach','textarea',''],
+    ['why','Why it matters','textarea','']
   ],
   rts: [
-    ['title','Headline','textarea','RETURN-TO-SPORT CRITERIA:\\nACL RECONSTRUCTION'],
-    ['i1','Item 1','text','Quad strength ≥ 90% limb symmetry index'],
-    ['i2','Item 2','text','Single-leg hop battery ≥ 90% symmetry'],
-    ['i3','Item 3','text','Psychological readiness (ACL-RSI) above threshold'],
-    ['i4','Item 4','text','Sport-specific movement quality under fatigue confirmed']
+    ['title','Headline','textarea',''],
+    ['i1','Item 1','text',''],
+    ['i2','Item 2','text',''],
+    ['i3','Item 3','text',''],
+    ['i4','Item 4','text','']
   ],
   result: [
-    ['eyebrow','Program / group','text','UCF MEN\'S SOCCER, 2025 SEASON'],
-    ['metric','Big number','text','24%'],
-    ['metriclabel','What the number means','textarea','reduction in reported hamstring strains season over season'],
-    ['context','Context','textarea','Driven by a new preseason screening protocol and biweekly load monitoring shared across medical and coaching staff.']
+    ['eyebrow','Program / group','text',''],
+    ['metric','Big number','text',''],
+    ['metriclabel','What the number means','textarea',''],
+    ['context','Context','textarea','']
   ],
   define: [
-    ['term','Term','text','ACWR'],
-    ['pos','Expansion','text','Acute:Chronic Workload Ratio'],
-    ['def','Definition','textarea','A ratio comparing an athlete\'s recent training load (acute) to their longer-term average (chronic), used to flag sudden spikes.'],
-    ['why','Why it matters','textarea','Sharp increases in this ratio are associated with elevated injury risk, giving staff an early warning signal.']
+    ['term','Term','text',''],
+    ['pos','Expansion','text',''],
+    ['def','Definition','textarea',''],
+    ['why','Why it matters','textarea','']
   ],
   progress: [
-    ['title','Framework name','text','ACHILLES REHAB: FOUR PHASES'],
-    ['p1t','Phase 1 title','text','Protection'],
-    ['p1d','Phase 1 detail','textarea','Manage load, protect healing tissue, restore range of motion.'],
-    ['p2t','Phase 2 title','text','Loading'],
-    ['p2d','Phase 2 detail','textarea','Progressive isometric to isotonic loading, rebuild tendon capacity.'],
-    ['p3t','Phase 3 title','text','Energy Storage'],
-    ['p3d','Phase 3 detail','textarea','Introduce plyometric and reactive loading, build elastic capacity.'],
-    ['p4t','Phase 4 title','text','Return to Sport'],
-    ['p4d','Phase 4 detail','textarea','Sport-specific exposure and objective criteria confirm readiness.']
+    ['title','Framework name','text',''],
+    ['p1t','Phase 1 title','text',''],
+    ['p1d','Phase 1 detail','textarea',''],
+    ['p2t','Phase 2 title','text',''],
+    ['p2d','Phase 2 detail','textarea',''],
+    ['p3t','Phase 3 title','text',''],
+    ['p3d','Phase 3 detail','textarea',''],
+    ['p4t','Phase 4 title','text',''],
+    ['p4d','Phase 4 detail','textarea','']
   ],
   photocover: [
     ['photo','Background photo','image',''],
-    ['seriesTitle','Series title','text','FRIDAY HUDDLE'],
-    ['subtitle','Subtitle line','text','READ · LISTEN · REFLECT'],
+    ['seriesTitle','Series title','text',''],
+    ['subtitle','Subtitle line','text',''],
     ['wordmark','Wordmark','text','Chase Chavez']
   ],
   photobanner: [
     ['photo','Background photo','image',''],
-    ['seriesLabel','Top series label','text','THE FILM ROOM'],
-    ['headline','Bottom banner headline','textarea','WHEN "CLEARED" ISN\'T\\nACTUALLY READY']
+    ['seriesLabel','Top series label','text',''],
+    ['headline','Bottom banner headline','textarea','']
   ],
   quotehighlight: [
     ['photo','Background photo (optional)','image',''],
-    ['quote','Quote text (use \\n for breaks)','textarea','DON\'T MISTAKE EMERGENT\\nMOVEMENT STRATEGIES\\nFOR FAULTY ONES'],
-    ['attribution','Attribution','text','— CHASE CHAVEZ, DPT, SCS']
+    ['quote','Quote text (use \\n for breaks)','textarea',''],
+    ['attribution','Attribution','text','— Chase Chavez, PT · DPT · SCS']
   ]
 };
 
@@ -662,7 +663,7 @@ function renderSlide(){
             <li>${esc(val('b3'))}</li>
             <li>${esc(val('b4'))}</li>
           </ul>
-          <div class="brand-wordmark">${esc(val('wordmark'))}</div>
+          <div class="brand-wordmark tagline-text">${esc(val('wordmark'))}</div>
         </div>`;
       break;
     case 'quote':
@@ -690,7 +691,7 @@ function renderSlide(){
           <div class="row"><span class="tag wrong">Common</span><p>${esc(val('common'))}</p></div>
           <div class="row"><span class="tag right">Better</span><p>${esc(val('better'))}</p></div>
           <div class="row"><span class="tag right">Why</span><p>${esc(val('why'))}</p></div>
-          <div class="brand-wordmark">CHASE CHAVEZ · DPT · SCS</div>
+          <div class="brand-wordmark">CHASE CHAVEZ · PT · DPT · SCS</div>
         </div>`;
       break;
     case 'rts':
@@ -703,7 +704,7 @@ function renderSlide(){
             <li><span class="box"></span>${esc(val('i3'))}</li>
             <li><span class="box"></span>${esc(val('i4'))}</li>
           </ul>
-          <div class="brand-wordmark">Build what stays.</div>
+          <div class="brand-wordmark tagline-text">Build what stays.</div>
         </div>`;
       break;
     case 'result':
@@ -757,7 +758,7 @@ function renderSlide(){
         </div>`;
       break;
     case 'quotehighlight':
-      bgStyle = currentPhoto['quotehighlight'] ? `background-image:url(${currentPhoto['quotehighlight']});` : 'background-color:#141414;';
+      bgStyle = currentPhoto['quotehighlight'] ? `background-image:url(${currentPhoto['quotehighlight']});` : 'background-color:#0A0A0A;';
       html = `
         <div class="s-quotehighlight" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">
           <div class="top-row">${nodeMarkWhite}<div class="brand-wordmark">CHASE CHAVEZ</div></div>
