@@ -7,6 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Slide Gen">
 <meta name="theme-color" content="#0A0A0A">
+<link rel="icon" id="faviconLink" type="image/png">
+<link rel="apple-touch-icon" id="appleTouchIcon">
 <title>Chase Chavez — Post Slide Generator</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -52,13 +54,15 @@
     overflow-y:auto;
     max-height:100vh;
   }
+  .panel-header{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+  .panel-header .node-mark-header{width:34px;height:34px;flex-shrink:0;}
   .panel h1{
     font-family:'Barlow Condensed', Arial, sans-serif;
     font-weight:700;
     font-size:20px;
     text-transform:uppercase;
     letter-spacing:0.5px;
-    margin:0 0 4px;
+    margin:0;
   }
   .panel .sub{font-size:12px;color:var(--warm-slate);margin-bottom:20px;}
 
@@ -304,7 +308,18 @@
 
   <!-- ================= LEFT PANEL ================= -->
   <div class="panel">
-    <h1>Post Slide Generator</h1>
+    <div class="panel-header">
+      <svg class="node-mark-header" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <line x1="50" y1="50" x2="50" y2="12" stroke="#005F87" stroke-width="4"/>
+        <line x1="50" y1="50" x2="82" y2="68" stroke="#005F87" stroke-width="4"/>
+        <line x1="50" y1="50" x2="18" y2="68" stroke="#005F87" stroke-width="4"/>
+        <circle cx="50" cy="12" r="8.4" fill="#00B8B8"/>
+        <circle cx="82" cy="68" r="8.4" fill="#00B8B8"/>
+        <circle cx="18" cy="68" r="8.4" fill="#00B8B8"/>
+        <circle cx="50" cy="50" r="6" fill="#005F87"/>
+      </svg>
+      <h1>Post Slide Generator</h1>
+    </div>
     <div class="sub">Pick a layout, drop in your topic, download.</div>
 
     <label>Layout</label>
@@ -803,6 +818,47 @@ function downloadSlide(){
     setTimeout(()=>{ btn.textContent = original; btn.classList.remove('done'); }, 2000);
   });
 }
+
+function buildAppIcon(size, bg){
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,size,size);
+
+  const pad = size * 0.24;
+  const inner = size - pad*2;
+  const scale = inner / 100;
+  const tx = x => pad + x*scale;
+  const ty = y => pad + y*scale;
+
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 4*scale;
+  ctx.lineCap = 'round';
+  [[50,50,50,12],[50,50,82,68],[50,50,18,68]].forEach(([x1,y1,x2,y2])=>{
+    ctx.beginPath();
+    ctx.moveTo(tx(x1),ty(y1));
+    ctx.lineTo(tx(x2),ty(y2));
+    ctx.stroke();
+  });
+
+  const circle = (x,y,r,color) => {
+    ctx.beginPath();
+    ctx.arc(tx(x),ty(y), r*scale, 0, Math.PI*2);
+    ctx.fillStyle = color;
+    ctx.fill();
+  };
+  circle(50,12,8.4,'#00B8B8');
+  circle(82,68,8.4,'#00B8B8');
+  circle(18,68,8.4,'#00B8B8');
+  circle(50,50,6,'#fff');
+
+  return canvas.toDataURL('image/png');
+}
+
+const appIcon = buildAppIcon(180, '#0A0A0A');
+document.getElementById('faviconLink').href = appIcon;
+document.getElementById('appleTouchIcon').href = appIcon;
 
 buildForm();
 document.getElementById('layoutSelect').addEventListener('change', buildForm);
