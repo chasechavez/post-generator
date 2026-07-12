@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Slide Gen">
+<meta name="theme-color" content="#141414">
+<title>Chase Chavez — Post Slide Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --athletic-blue:#005F87;
+    --performance-teal:#00A3A3;
+    --warm-slate:#565A5C;
+    --near-black:#141414;
+    --off-white:#F5F4F2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:#e8e6e2;
+    font-family:'Barlow', Arial, sans-serif;
+    color:var(--near-black);
+  }
+
+  .app{
+    display:grid;
+    grid-template-columns:380px 1fr;
+    min-height:100vh;
+  }
+  @media (max-width:900px){
+    .app{display:flex;flex-direction:column;}
+    .preview-area{order:-1;padding:20px 16px;position:sticky;top:0;background:#e8e6e2;z-index:10;box-shadow:0 4px 10px rgba(0,0,0,0.08);}
+    .slide-shell{width:320px;}
+    .panel{max-height:none;padding:20px 16px 100px;border-right:none;}
+    .download-btn{
+      position:fixed;left:16px;right:16px;bottom:16px;width:auto;
+      z-index:50;box-shadow:0 4px 16px rgba(0,0,0,0.3);
+      padding:14px 0 calc(14px + env(safe-area-inset-bottom));
+    }
+  }
+
+  /* ===== LEFT PANEL ===== */
+  .panel{
+    background:#fff;
+    border-right:1px solid #ddd8d3;
+    padding:24px;
+    overflow-y:auto;
+    max-height:100vh;
+  }
+  .panel h1{
+    font-family:'Barlow Condensed', Arial, sans-serif;
+    font-weight:700;
+    font-size:20px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin:0 0 4px;
+  }
+  .panel .sub{font-size:12px;color:var(--warm-slate);margin-bottom:20px;}
+
+  label{
+    display:block;
+    font-family:'Barlow Condensed', Arial, sans-serif;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--warm-slate);
+    margin:16px 0 6px;
+  }
+  select, input[type=text], textarea, input[type=file]{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    font-family:'Barlow', Arial, sans-serif;
+    font-size:16px;
+    color:var(--near-black);
+    background:#fff;
+  }
+  textarea{resize:vertical;min-height:56px;}
+  select{cursor:pointer;}
+
+  .field-group{
+    border-top:1px dashed #ddd;
+    padding-top:4px;
+    margin-top:12px;
+  }
+
+  .input-row{display:flex;gap:6px;align-items:flex-start;}
+  .input-row input, .input-row textarea{flex:1;min-width:0;}
+  .mic-btn{
+    flex-shrink:0;
+    width:38px;height:38px;
+    border:1px solid #ccc;
+    border-radius:50%;
+    background:#fff;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    padding:0;
+  }
+  .mic-btn svg{width:17px;height:17px;}
+  .mic-btn svg *{fill:var(--warm-slate);}
+  .mic-btn.active{background:#c0392b;border-color:#c0392b;animation:pulse 1.2s infinite;}
+  .mic-btn.active svg *{fill:#fff;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(192,57,43,0.5);}70%{box-shadow:0 0 0 8px rgba(192,57,43,0);}100%{box-shadow:0 0 0 0 rgba(192,57,43,0);}}
+  .mic-hint{font-size:11px;color:var(--performance-teal);margin-top:4px;display:none;}
+  .mic-hint.show{display:block;}
+
+  .download-btn{
+    display:block;
+    width:100%;
+    margin-top:24px;
+    background:var(--athletic-blue);
+    color:#fff;
+    border:none;
+    padding:13px 0;
+    border-radius:4px;
+    font-family:'Barlow Condensed', Arial, sans-serif;
+    font-size:15px;
+    font-weight:600;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .download-btn:hover{background:#004a6b;}
+  .download-btn.done{background:var(--performance-teal);}
+
+  .reset-note{
+    font-size:11px;
+    color:var(--warm-slate);
+    margin-top:10px;
+    line-height:1.4;
+  }
+
+  /* ===== RIGHT PANEL / PREVIEW ===== */
+  .preview-area{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+  }
+  .slide-shell{
+    width:520px;
+    max-width:90vw;
+    box-shadow:0 4px 24px rgba(0,0,0,0.15);
+  }
+  .slide{
+    width:100%;
+    aspect-ratio:1/1;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    background-size:cover;
+    background-position:center;
+  }
+
+  .node-mark-sm{width:22px;height:22px;flex-shrink:0;}
+  .brand-wordmark{
+    font-family:'Barlow Condensed', Arial, sans-serif;
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+  }
+
+  /* --- shared type styles --- */
+  .s-cover{background:linear-gradient(160deg, var(--near-black) 0%, #1f2426 100%);padding:48px 44px;justify-content:space-between;}
+  .s-cover .top{display:flex;align-items:center;gap:10px;}
+  .s-cover .brand-wordmark{color:#fff;opacity:0.9;}
+  .s-cover .headline{font-family:'Barlow Condensed';font-weight:700;font-size:52px;line-height:1.03;text-transform:uppercase;color:#fff;white-space:pre-wrap;}
+  .s-cover .headline .accent{color:var(--performance-teal);}
+  .s-cover .tagline{font-family:'Barlow Condensed';font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--warm-slate);}
+
+  .s-insight{background:var(--off-white);padding:56px 48px;justify-content:center;}
+  .s-insight .rule{display:flex;gap:6px;margin-bottom:24px;}
+  .s-insight .rule span{width:5px;height:34px;background:var(--near-black);}
+  .s-insight .headline{font-family:'Barlow Condensed';font-weight:700;font-size:34px;line-height:1.08;text-transform:uppercase;color:var(--near-black);margin-bottom:20px;white-space:pre-wrap;}
+  .s-insight .body{font-size:18px;line-height:1.45;color:var(--warm-slate);font-weight:500;white-space:pre-wrap;}
+
+  .s-breakdown{background:var(--athletic-blue);color:#fff;}
+  .s-breakdown .header-row{display:flex;justify-content:space-between;align-items:center;padding:20px 32px 16px;}
+  .s-breakdown .brand-wordmark{color:rgba(255,255,255,0.85);font-size:11px;letter-spacing:3px;}
+  .s-breakdown .title-bar{background:var(--off-white);padding:18px 32px;}
+  .s-breakdown .title-bar h2{font-family:'Barlow Condensed';font-weight:700;font-size:25px;line-height:1.1;text-transform:uppercase;color:var(--near-black);margin:0;white-space:pre-wrap;}
+  .s-breakdown ul{padding:24px 32px 0;margin:0;list-style:none;flex:1;}
+  .s-breakdown li{font-size:16px;line-height:1.4;margin-bottom:16px;position:relative;padding-left:20px;}
+  .s-breakdown li:before{content:"";position:absolute;left:0;top:8px;width:8px;height:8px;background:var(--performance-teal);border-radius:50%;}
+
+  .s-bold{background:var(--warm-slate);padding:52px 44px;justify-content:space-between;}
+  .s-bold .headline{font-family:'Barlow Condensed';font-weight:800;font-size:40px;line-height:1.06;text-transform:uppercase;color:var(--performance-teal);white-space:pre-wrap;}
+  .s-bold .sub{font-size:17px;line-height:1.5;color:#fff;margin-top:22px;white-space:pre-wrap;}
+  .s-bold .brand-wordmark{color:rgba(255,255,255,0.6);margin-top:24px;}
+
+  .s-whyitmatters{background:var(--near-black);padding:44px 40px;}
+  .s-whyitmatters .top-rule{width:60px;height:3px;background:var(--performance-teal);margin-bottom:18px;}
+  .s-whyitmatters h2{font-family:'Barlow Condensed';font-weight:800;font-size:30px;line-height:1.08;text-transform:uppercase;color:#fff;margin:0 0 22px;white-space:pre-wrap;}
+  .s-whyitmatters ul{list-style:none;padding:0;margin:0;flex:1;}
+  .s-whyitmatters li{font-size:15px;line-height:1.4;color:#d8d6d3;margin-bottom:16px;padding-left:18px;position:relative;}
+  .s-whyitmatters li:before{content:"—";position:absolute;left:0;color:var(--performance-teal);}
+  .s-whyitmatters .brand-wordmark{color:rgba(255,255,255,0.5);margin-top:auto;align-self:center;padding-top:16px;}
+
+  .s-quote{background:var(--near-black);padding:48px 44px;justify-content:center;align-items:center;text-align:center;}
+  .s-quote .label{font-family:'Barlow Condensed';font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--performance-teal);margin-bottom:28px;align-self:flex-start;}
+  .s-quote .quote-text{font-size:23px;line-height:1.4;color:#fff;white-space:pre-wrap;}
+  .s-quote .attribution{margin-top:24px;font-family:'Barlow Condensed';font-size:18px;color:var(--performance-teal);}
+
+  .s-beforeafter{background:var(--off-white);padding:0;}
+  .s-beforeafter .header{padding:22px 32px 16px;}
+  .s-beforeafter .header h2{font-family:'Barlow Condensed';font-weight:700;font-size:24px;text-transform:uppercase;color:var(--near-black);margin:0;white-space:pre-wrap;}
+  .s-beforeafter .cols{flex:1;display:flex;}
+  .s-beforeafter .col{flex:1;padding:20px 22px;}
+  .s-beforeafter .col.before{background:var(--warm-slate);color:#fff;}
+  .s-beforeafter .col.after{background:var(--athletic-blue);color:#fff;}
+  .s-beforeafter .col-label{font-family:'Barlow Condensed';font-size:13px;letter-spacing:2px;text-transform:uppercase;opacity:0.8;margin-bottom:14px;}
+  .s-beforeafter .col p{font-size:14px;line-height:1.45;margin:0 0 10px;white-space:pre-wrap;}
+
+  .s-mistake{background:var(--near-black);padding:36px 36px 30px;}
+  .s-mistake h2{font-family:'Barlow Condensed';font-weight:800;font-size:26px;text-transform:uppercase;color:#fff;margin:0 0 24px;white-space:pre-wrap;}
+  .s-mistake .row{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;}
+  .s-mistake .tag{font-family:'Barlow Condensed';font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:2px;flex-shrink:0;margin-top:2px;}
+  .s-mistake .tag.wrong{background:#5c2a2a;color:#f2b8b8;}
+  .s-mistake .tag.right{background:#0d3d3d;color:#7fe0d8;}
+  .s-mistake .row p{font-size:15px;line-height:1.4;color:#e5e3e0;margin:0;white-space:pre-wrap;}
+  .s-mistake .brand-wordmark{color:rgba(255,255,255,0.5);margin-top:auto;align-self:center;padding-top:10px;}
+
+  .s-rts{background:var(--performance-teal);padding:40px 36px;}
+  .s-rts h2{font-family:'Barlow Condensed';font-weight:800;font-size:26px;text-transform:uppercase;color:var(--near-black);margin:0 0 22px;white-space:pre-wrap;}
+  .s-rts ul{list-style:none;padding:0;margin:0;flex:1;}
+  .s-rts li{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;font-size:15px;line-height:1.4;color:var(--near-black);font-weight:500;white-space:pre-wrap;}
+  .s-rts .box{width:20px;height:20px;border:2.5px solid var(--near-black);border-radius:3px;flex-shrink:0;margin-top:2px;}
+  .s-rts .brand-wordmark{color:rgba(20,20,20,0.55);align-self:center;}
+
+  .s-result{background:var(--near-black);padding:44px 40px;justify-content:space-between;}
+  .s-result .eyebrow{font-family:'Barlow Condensed';font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--performance-teal);}
+  .s-result .metric{font-family:'Barlow Condensed';font-weight:800;font-size:82px;color:#fff;line-height:1;margin:14px 0 6px;}
+  .s-result .metric-label{font-size:16px;color:#d8d6d3;font-weight:500;margin-bottom:26px;white-space:pre-wrap;}
+  .s-result .context{font-size:14px;line-height:1.5;color:#b8b6b3;border-top:1px solid #333;padding-top:18px;white-space:pre-wrap;}
+
+  .s-define{background:var(--athletic-blue);padding:44px 40px;justify-content:center;}
+  .s-define .term{font-family:'Barlow Condensed';font-weight:800;font-size:36px;text-transform:uppercase;color:#fff;margin-bottom:6px;}
+  .s-define .pos{font-size:14px;font-style:italic;color:var(--performance-teal);margin-bottom:20px;}
+  .s-define .def{font-size:17px;line-height:1.5;color:#eaf3f7;white-space:pre-wrap;}
+  .s-define .why{margin-top:20px;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.75);border-left:3px solid var(--performance-teal);padding-left:14px;white-space:pre-wrap;}
+
+  .s-progress{background:var(--off-white);padding:36px 34px;}
+  .s-progress h2{font-family:'Barlow Condensed';font-weight:700;font-size:23px;text-transform:uppercase;color:var(--near-black);margin:0 0 20px;white-space:pre-wrap;}
+  .s-progress .phase{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #ddd8d3;}
+  .s-progress .phase:last-child{border-bottom:none;}
+  .s-progress .phase-num{font-family:'Barlow Condensed';font-weight:800;font-size:24px;color:var(--performance-teal);width:36px;flex-shrink:0;}
+  .s-progress .phase-title{font-family:'Barlow Condensed';font-weight:600;font-size:15px;text-transform:uppercase;color:var(--near-black);}
+  .s-progress .phase-detail{font-size:12px;color:var(--warm-slate);margin-top:2px;white-space:pre-wrap;}
+
+  /* --- new photo-based types --- */
+  .s-photocover{padding:40px 36px;justify-content:space-between;background-color:#333;}
+  .s-photocover:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.65) 100%);}
+  .s-photocover > *{position:relative;z-index:1;}
+  .s-photocover .top-block{text-align:center;margin-top:30px;}
+  .s-photocover .series-title{font-family:'Barlow Condensed';font-weight:800;font-size:46px;letter-spacing:1px;text-transform:uppercase;color:#fff;}
+  .s-photocover .subtitle{font-family:'Barlow Condensed';font-weight:500;font-style:italic;font-size:17px;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-top:10px;}
+  .s-photocover .bottom-block{display:flex;align-items:center;justify-content:center;gap:10px;}
+  .s-photocover .brand-wordmark{color:#fff;}
+
+  .s-photobanner{background-color:#333;}
+  .s-photobanner:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.05) 55%, rgba(0,0,0,0.55) 100%);}
+  .s-photobanner > *{position:relative;z-index:1;}
+  .s-photobanner .top-row{display:flex;align-items:center;gap:8px;padding:26px 28px 0;}
+  .s-photobanner .series-label{font-family:'Barlow Condensed';font-weight:700;font-size:15px;letter-spacing:2px;text-transform:uppercase;color:#fff;}
+  .s-photobanner .spacer{flex:1;}
+  .s-photobanner .banner{margin-top:auto;background:rgba(0,95,135,0.88);padding:26px 28px;}
+  .s-photobanner .banner h2{font-family:'Barlow Condensed';font-weight:800;font-size:30px;line-height:1.1;text-transform:uppercase;color:#fff;margin:0;white-space:pre-wrap;}
+
+  .s-quotehighlight{padding:52px 40px;justify-content:center;background-color:#222;}
+  .s-quotehighlight:before{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.4);}
+  .s-quotehighlight > *{position:relative;z-index:1;}
+  .s-quotehighlight .top-row{display:flex;align-items:center;gap:8px;margin-bottom:26px;}
+  .s-quotehighlight .brand-wordmark{color:#fff;}
+  .s-quotehighlight .quote-highlight{
+    font-family:'Barlow Condensed';
+    font-weight:700;
+    font-size:26px;
+    line-height:1.55;
+    text-transform:uppercase;
+    color:#fff;
+    background:var(--performance-teal);
+    box-decoration-break:clone;
+    -webkit-box-decoration-break:clone;
+    padding:4px 8px;
+    white-space:pre-wrap;
+  }
+  .s-quotehighlight .attribution{margin-top:22px;font-family:'Barlow Condensed';font-size:16px;letter-spacing:1px;text-transform:uppercase;color:#fff;}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ================= LEFT PANEL ================= -->
+  <div class="panel">
+    <h1>Post Slide Generator</h1>
+    <div class="sub">Pick a layout, drop in your topic, download.</div>
+
+    <label>Layout</label>
+    <select id="layoutSelect">
+      <optgroup label="Photo-based">
+        <option value="photocover">Series Cover (photo + title)</option>
+        <option value="photobanner">Photo + Bottom Banner</option>
+        <option value="quotehighlight">Quote Highlight (photo)</option>
+      </optgroup>
+      <optgroup label="Core">
+        <option value="cover">Cover (dark, no photo)</option>
+        <option value="insight">Insight / Finding</option>
+        <option value="breakdown">Breakdown (bullets)</option>
+        <option value="bold">Bold Statement</option>
+        <option value="whyitmatters">Why It Matters</option>
+        <option value="quote">Quote (no photo)</option>
+      </optgroup>
+      <optgroup label="Rehab & Performance">
+        <option value="beforeafter">Before / After Protocol</option>
+        <option value="mistake">Mistake vs. Better Approach</option>
+        <option value="rts">Return-to-Sport Checklist</option>
+        <option value="result">Case Result / Metric</option>
+        <option value="define">Term / Concept Breakdown</option>
+        <option value="progress">Progression / Phase Framework</option>
+      </optgroup>
+    </select>
+
+    <div id="formFields"></div>
+
+    <button class="download-btn" onclick="downloadSlide()">Download PNG</button>
+    <div class="reset-note">Tap the mic next to any field to dictate instead of typing. Your entries stay on screen as you switch layouts to compare — refresh the page to start fully clean. Photos aren't saved anywhere; they only live in your browser tab.</div>
+  </div>
+
+  <!-- ================= RIGHT PANEL / PREVIEW ================= -->
+  <div class="preview-area">
+    <div class="slide-shell">
+      <div class="slide" id="slidePreview"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const nodeMarkWhite = `<svg class="node-mark-sm" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <line x1="50" y1="50" x2="50" y2="12" stroke="#fff" stroke-width="4"/>
+  <line x1="50" y1="50" x2="82" y2="68" stroke="#fff" stroke-width="4"/>
+  <line x1="50" y1="50" x2="18" y2="68" stroke="#fff" stroke-width="4"/>
+  <circle cx="50" cy="50" r="9" fill="#00A3A3"/>
+  <circle cx="50" cy="12" r="6" fill="#fff"/>
+  <circle cx="82" cy="68" r="6" fill="#fff"/>
+  <circle cx="18" cy="68" r="6" fill="#fff"/>
+</svg>`;
+
+// field schema per layout: [id, label, type ('text'|'textarea'|'image'), default value]
+const schemas = {
+  cover: [
+    ['title','Headline (use \\n for line breaks)','textarea','WHAT WE KNOW ABOUT\\nHAMSTRING\\nREINJURY'],
+    ['accent','Accent line (teal, optional)','text','REINJURY'],
+    ['tagline','Bottom tagline','text','Build what stays.'],
+    ['wordmark','Wordmark','text','Chase Chavez']
+  ],
+  insight: [
+    ['headline','Headline','textarea','ISOMETRIC LOADING\\nCHANGES PAIN RESPONSE'],
+    ['body','Body text','textarea','Heavy, slow isometric holds reduced tendon pain immediately post-session in patellar tendinopathy.']
+  ],
+  breakdown: [
+    ['handle','Small handle/label','text','@chasechavezdpt'],
+    ['title','Title bar headline','textarea','WHY LOAD MONITORING CHANGES OUTCOMES'],
+    ['b1','Bullet 1','text','Establishes an individual baseline rather than a population norm.'],
+    ['b2','Bullet 2','text','Flags spikes in acute-to-chronic workload before symptoms appear.'],
+    ['b3','Bullet 3','text','Gives coaches a shared number to plan around, not just a feeling.'],
+    ['b4','Bullet 4','text','Doesn\'t replace clinical judgment — it informs it.']
+  ],
+  bold: [
+    ['headline','Bold claim','textarea','STRENGTH ALONE\\nDOESN\'T PREDICT\\nRETURN-TO-SPORT SUCCESS'],
+    ['sub','Supporting context','textarea','Confidence, movement quality under fatigue, and sport-specific exposure matter just as much.'],
+    ['wordmark','Wordmark','text','CHASE CHAVEZ · DPT · SCS']
+  ],
+  whyitmatters: [
+    ['title','Headline','textarea','WHY "CLEARED"\\nISN\'T "READY"'],
+    ['b1','Bullet 1','text','Medical clearance checks tissue healing, not sport readiness.'],
+    ['b2','Bullet 2','text','Strength symmetry doesn\'t guarantee movement quality under fatigue.'],
+    ['b3','Bullet 3','text','Psychological readiness is a measurable variable, not an afterthought.'],
+    ['b4','Bullet 4','text','The gap between cleared and ready is where reinjury lives.'],
+    ['wordmark','Bottom line','text','Build what stays.']
+  ],
+  quote: [
+    ['quote','Quote text','textarea','"Don\'t mistake emergent movement strategies for faulty ones. The body often chooses efficiency."'],
+    ['attribution','Attribution','text','— Chase Chavez, DPT, SCS']
+  ],
+  beforeafter: [
+    ['title','Protocol name','text','HAMSTRING RETURN-TO-SPRINT'],
+    ['beforeP1','Before — point 1','textarea','Cleared at 90% strength symmetry, back to full training.'],
+    ['beforeP2','Before — point 2','textarea','No exposure to max-velocity sprinting before return.'],
+    ['afterP1','After — point 1','textarea','Progressive sprint exposure built into the final phase.'],
+    ['afterP2','After — point 2','textarea','Reinjury rate dropped across the tracked cohort.']
+  ],
+  mistake: [
+    ['title','Headline','textarea','A COMMON MISTAKE IN\\nACL REHAB TIMELINES'],
+    ['common','Common approach','textarea','Clearing athletes based on a fixed calendar timeline (e.g. "9 months").'],
+    ['better','Better approach','textarea','Clearing based on objective criteria — strength, hop symmetry, psychological readiness.'],
+    ['why','Why it matters','textarea','Tissue healing and neuromuscular readiness don\'t run on the same clock for every athlete.']
+  ],
+  rts: [
+    ['title','Headline','textarea','RETURN-TO-SPORT CRITERIA:\\nACL RECONSTRUCTION'],
+    ['i1','Item 1','text','Quad strength ≥ 90% limb symmetry index'],
+    ['i2','Item 2','text','Single-leg hop battery ≥ 90% symmetry'],
+    ['i3','Item 3','text','Psychological readiness (ACL-RSI) above threshold'],
+    ['i4','Item 4','text','Sport-specific movement quality under fatigue confirmed']
+  ],
+  result: [
+    ['eyebrow','Program / group','text','UCF MEN\'S SOCCER, 2025 SEASON'],
+    ['metric','Big number','text','24%'],
+    ['metriclabel','What the number means','textarea','reduction in reported hamstring strains season over season'],
+    ['context','Context','textarea','Driven by a new preseason screening protocol and biweekly load monitoring shared across medical and coaching staff.']
+  ],
+  define: [
+    ['term','Term','text','ACWR'],
+    ['pos','Expansion','text','Acute:Chronic Workload Ratio'],
+    ['def','Definition','textarea','A ratio comparing an athlete\'s recent training load (acute) to their longer-term average (chronic), used to flag sudden spikes.'],
+    ['why','Why it matters','textarea','Sharp increases in this ratio are associated with elevated injury risk, giving staff an early warning signal.']
+  ],
+  progress: [
+    ['title','Framework name','text','ACHILLES REHAB: FOUR PHASES'],
+    ['p1t','Phase 1 title','text','Protection'],
+    ['p1d','Phase 1 detail','textarea','Manage load, protect healing tissue, restore range of motion.'],
+    ['p2t','Phase 2 title','text','Loading'],
+    ['p2d','Phase 2 detail','textarea','Progressive isometric to isotonic loading, rebuild tendon capacity.'],
+    ['p3t','Phase 3 title','text','Energy Storage'],
+    ['p3d','Phase 3 detail','textarea','Introduce plyometric and reactive loading, build elastic capacity.'],
+    ['p4t','Phase 4 title','text','Return to Sport'],
+    ['p4d','Phase 4 detail','textarea','Sport-specific exposure and objective criteria confirm readiness.']
+  ],
+  photocover: [
+    ['photo','Background photo','image',''],
+    ['seriesTitle','Series title','text','FRIDAY HUDDLE'],
+    ['subtitle','Subtitle line','text','READ · LISTEN · REFLECT'],
+    ['wordmark','Wordmark','text','Chase Chavez']
+  ],
+  photobanner: [
+    ['photo','Background photo','image',''],
+    ['seriesLabel','Top series label','text','THE FILM ROOM'],
+    ['headline','Bottom banner headline','textarea','WHEN "CLEARED" ISN\'T\\nACTUALLY READY']
+  ],
+  quotehighlight: [
+    ['photo','Background photo (optional)','image',''],
+    ['quote','Quote text (use \\n for breaks)','textarea','DON\'T MISTAKE EMERGENT\\nMOVEMENT STRATEGIES\\nFOR FAULTY ONES'],
+    ['attribution','Attribution','text','— CHASE CHAVEZ, DPT, SCS']
+  ]
+};
+
+let currentPhoto = {}; // stores dataURL per layout key that uses photo
+
+const micIcon = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0H3a9 9 0 0 0 8 8.94V23h2v-3.06A9 9 0 0 0 21 11h-2z"/></svg>`;
+
+const speechSupported = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+
+function buildForm(){
+  stopRecognition();
+  const type = document.getElementById('layoutSelect').value;
+  const container = document.getElementById('formFields');
+  container.innerHTML = '';
+  schemas[type].forEach(([id,label,fieldType,defVal])=>{
+    const wrap = document.createElement('div');
+    wrap.className='field-group';
+    const lab = document.createElement('label');
+    lab.textContent = label;
+    wrap.appendChild(lab);
+
+    if(fieldType==='textarea'){
+      const row = document.createElement('div');
+      row.className='input-row';
+      const ta = document.createElement('textarea');
+      ta.id = 'f_'+id;
+      ta.value = defVal.replace(/\\n/g,'\n');
+      ta.oninput = renderSlide;
+      row.appendChild(ta);
+      if(speechSupported) row.appendChild(makeMicButton('f_'+id));
+      wrap.appendChild(row);
+    } else if(fieldType==='image'){
+      const inp = document.createElement('input');
+      inp.type='file';
+      inp.accept='image/*';
+      inp.id='f_'+id;
+      inp.onchange = function(e){
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev){
+          currentPhoto[type] = ev.target.result;
+          renderSlide();
+        };
+        reader.readAsDataURL(file);
+      };
+      wrap.appendChild(inp);
+    } else {
+      const row = document.createElement('div');
+      row.className='input-row';
+      const inp = document.createElement('input');
+      inp.type='text';
+      inp.id='f_'+id;
+      inp.value = defVal;
+      inp.oninput = renderSlide;
+      row.appendChild(inp);
+      if(speechSupported) row.appendChild(makeMicButton('f_'+id));
+      wrap.appendChild(row);
+    }
+    container.appendChild(wrap);
+  });
+  renderSlide();
+}
+
+function makeMicButton(fieldId){
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'mic-btn';
+  btn.dataset.field = fieldId;
+  btn.innerHTML = micIcon;
+  btn.title = 'Tap to dictate';
+  btn.onclick = function(e){
+    e.preventDefault();
+    toggleMic(fieldId, btn);
+  };
+  return btn;
+}
+
+/* ===== VOICE DICTATION ===== */
+let recognition = null;
+let recognizing = false;
+let activeFieldId = null;
+let baseTextForRecognition = '';
+
+function initRecognition(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) return null;
+  const r = new SR();
+  r.continuous = true;
+  r.interimResults = true;
+  r.lang = 'en-US';
+  r.onresult = function(e){
+    let finalText = '';
+    let interimText = '';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t = e.results[i][0].transcript;
+      if(e.results[i].isFinal) finalText += t;
+      else interimText += t;
+    }
+    if(finalText) baseTextForRecognition = (baseTextForRecognition + ' ' + finalText).trim();
+    const el = document.getElementById(activeFieldId);
+    if(el){
+      el.value = (baseTextForRecognition + ' ' + interimText).trim();
+      renderSlide();
+    }
+  };
+  r.onend = function(){
+    if(recognizing){
+      try{ r.start(); }catch(err){}
+    }
+  };
+  r.onerror = function(){
+    stopRecognition();
+  };
+  return r;
+}
+
+function toggleMic(fieldId, btn){
+  if(!speechSupported){
+    alert('Voice dictation needs Chrome or Safari — try one of those on this device.');
+    return;
+  }
+  if(recognizing && activeFieldId===fieldId){
+    stopRecognition();
+    return;
+  }
+  if(recognizing) stopRecognition();
+  activeFieldId = fieldId;
+  const el = document.getElementById(fieldId);
+  baseTextForRecognition = el ? el.value : '';
+  if(!recognition) recognition = initRecognition();
+  recognizing = true;
+  document.querySelectorAll('.mic-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  try{ recognition.start(); }catch(err){}
+}
+
+function stopRecognition(){
+  recognizing = false;
+  if(recognition){ try{ recognition.stop(); }catch(err){} }
+  document.querySelectorAll('.mic-btn').forEach(function(b){ b.classList.remove('active'); });
+  activeFieldId = null;
+}
+
+function val(id){
+  const el = document.getElementById('f_'+id);
+  return el ? el.value : '';
+}
+
+function esc(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderSlide(){
+  const type = document.getElementById('layoutSelect').value;
+  const el = document.getElementById('slidePreview');
+  let html = '';
+  let bgStyle = '';
+
+  switch(type){
+    case 'cover':
+      html = `
+        <div class="s-cover" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+          <div class="top">${nodeMarkWhite}<div class="brand-wordmark">${esc(val('wordmark'))}</div></div>
+          <div class="headline">${esc(val('title'))}</div>
+          <div class="tagline">${esc(val('tagline'))}</div>
+        </div>`;
+      break;
+    case 'insight':
+      html = `
+        <div class="s-insight" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">
+          <div class="rule"><span></span><span></span></div>
+          <div class="headline">${esc(val('headline'))}</div>
+          <div class="body">${esc(val('body'))}</div>
+        </div>`;
+      break;
+    case 'breakdown':
+      html = `
+        <div class="s-breakdown" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          <div class="header-row"><div class="brand-wordmark">${esc(val('handle'))}</div>${nodeMarkWhite}</div>
+          <div class="title-bar"><h2>${esc(val('title'))}</h2></div>
+          <ul>
+            <li>${esc(val('b1'))}</li>
+            <li>${esc(val('b2'))}</li>
+            <li>${esc(val('b3'))}</li>
+            <li>${esc(val('b4'))}</li>
+          </ul>
+        </div>`;
+      break;
+    case 'bold':
+      html = `
+        <div class="s-bold" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+          <div class="headline">${esc(val('headline'))}</div>
+          <div>
+            <div class="sub">${esc(val('sub'))}</div>
+            <div class="brand-wordmark">${esc(val('wordmark'))}</div>
+          </div>
+        </div>`;
+      break;
+    case 'whyitmatters':
+      html = `
+        <div class="s-whyitmatters" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          <div class="top-rule"></div>
+          <h2>${esc(val('title'))}</h2>
+          <ul>
+            <li>${esc(val('b1'))}</li>
+            <li>${esc(val('b2'))}</li>
+            <li>${esc(val('b3'))}</li>
+            <li>${esc(val('b4'))}</li>
+          </ul>
+          <div class="brand-wordmark">${esc(val('wordmark'))}</div>
+        </div>`;
+      break;
+    case 'quote':
+      html = `
+        <div class="s-quote" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+          <div class="label">Quote</div>
+          <div class="quote-text">${esc(val('quote'))}</div>
+          <div class="attribution">${esc(val('attribution'))}</div>
+        </div>`;
+      break;
+    case 'beforeafter':
+      html = `
+        <div class="s-beforeafter" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          <div class="header"><h2>${esc(val('title'))}</h2></div>
+          <div class="cols">
+            <div class="col before"><div class="col-label">Before</div><p>${esc(val('beforeP1'))}</p><p>${esc(val('beforeP2'))}</p></div>
+            <div class="col after"><div class="col-label">After</div><p>${esc(val('afterP1'))}</p><p>${esc(val('afterP2'))}</p></div>
+          </div>
+        </div>`;
+      break;
+    case 'mistake':
+      html = `
+        <div class="s-mistake" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          <h2>${esc(val('title'))}</h2>
+          <div class="row"><span class="tag wrong">Common</span><p>${esc(val('common'))}</p></div>
+          <div class="row"><span class="tag right">Better</span><p>${esc(val('better'))}</p></div>
+          <div class="row"><span class="tag right">Why</span><p>${esc(val('why'))}</p></div>
+          <div class="brand-wordmark">CHASE CHAVEZ · DPT · SCS</div>
+        </div>`;
+      break;
+    case 'rts':
+      html = `
+        <div class="s-rts" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          <h2>${esc(val('title'))}</h2>
+          <ul>
+            <li><span class="box"></span>${esc(val('i1'))}</li>
+            <li><span class="box"></span>${esc(val('i2'))}</li>
+            <li><span class="box"></span>${esc(val('i3'))}</li>
+            <li><span class="box"></span>${esc(val('i4'))}</li>
+          </ul>
+          <div class="brand-wordmark">Build what stays.</div>
+        </div>`;
+      break;
+    case 'result':
+      html = `
+        <div class="s-result" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+          <div class="eyebrow">${esc(val('eyebrow'))}</div>
+          <div>
+            <div class="metric">${esc(val('metric'))}</div>
+            <div class="metric-label">${esc(val('metriclabel'))}</div>
+          </div>
+          <div class="context">${esc(val('context'))}</div>
+        </div>`;
+      break;
+    case 'define':
+      html = `
+        <div class="s-define" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">
+          <div class="term">${esc(val('term'))}</div>
+          <div class="pos">${esc(val('pos'))}</div>
+          <div class="def">${esc(val('def'))}</div>
+          <div class="why">${esc(val('why'))}</div>
+        </div>`;
+      break;
+    case 'progress':
+      html = `
+        <div class="s-progress" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          <h2>${esc(val('title'))}</h2>
+          <div class="phase"><div class="phase-num">01</div><div><div class="phase-title">${esc(val('p1t'))}</div><div class="phase-detail">${esc(val('p1d'))}</div></div></div>
+          <div class="phase"><div class="phase-num">02</div><div><div class="phase-title">${esc(val('p2t'))}</div><div class="phase-detail">${esc(val('p2d'))}</div></div></div>
+          <div class="phase"><div class="phase-num">03</div><div><div class="phase-title">${esc(val('p3t'))}</div><div class="phase-detail">${esc(val('p3d'))}</div></div></div>
+          <div class="phase"><div class="phase-num">04</div><div><div class="phase-title">${esc(val('p4t'))}</div><div class="phase-detail">${esc(val('p4d'))}</div></div></div>
+        </div>`;
+      break;
+    case 'photocover':
+      bgStyle = currentPhoto['photocover'] ? `background-image:url(${currentPhoto['photocover']});` : 'background-color:#333;';
+      html = `
+        <div class="s-photocover" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+          <div class="top-block">
+            <div class="series-title">${esc(val('seriesTitle'))}</div>
+            <div class="subtitle">${esc(val('subtitle'))}</div>
+          </div>
+          <div class="bottom-block">${nodeMarkWhite}<div class="brand-wordmark">${esc(val('wordmark'))}</div></div>
+        </div>`;
+      break;
+    case 'photobanner':
+      bgStyle = currentPhoto['photobanner'] ? `background-image:url(${currentPhoto['photobanner']});` : 'background-color:#333;';
+      html = `
+        <div class="s-photobanner" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          <div class="top-row">${nodeMarkWhite}<div class="series-label">${esc(val('seriesLabel'))}</div></div>
+          <div class="spacer"></div>
+          <div class="banner"><h2>${esc(val('headline'))}</h2></div>
+        </div>`;
+      break;
+    case 'quotehighlight':
+      bgStyle = currentPhoto['quotehighlight'] ? `background-image:url(${currentPhoto['quotehighlight']});` : 'background-color:#141414;';
+      html = `
+        <div class="s-quotehighlight" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">
+          <div class="top-row">${nodeMarkWhite}<div class="brand-wordmark">CHASE CHAVEZ</div></div>
+          <div class="quote-highlight">${esc(val('quote'))}</div>
+          <div class="attribution">${esc(val('attribution'))}</div>
+        </div>`;
+      break;
+  }
+
+  el.style.cssText = bgStyle;
+  el.innerHTML = html;
+}
+
+function isIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function downloadSlide(){
+  const node = document.getElementById('slidePreview');
+  const btn = document.querySelector('.download-btn');
+  const original = btn.textContent;
+  html2canvas(node, {scale: 1080/node.offsetWidth, useCORS:true}).then(canvas=>{
+    const dataUrl = canvas.toDataURL('image/png');
+    if(isIOS()){
+      // iOS Safari ignores the download attribute — open the image so the user can long-press to save it
+      const win = window.open();
+      if(win){
+        win.document.write('<title>Long-press image to save</title><body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh;"><img src="'+dataUrl+'" style="max-width:100%;height:auto;"></body>');
+      } else {
+        window.location.href = dataUrl;
+      }
+      btn.textContent = 'Long-Press Image to Save';
+    } else {
+      const type = document.getElementById('layoutSelect').value;
+      const link = document.createElement('a');
+      link.download = type + '_slide.png';
+      link.href = dataUrl;
+      link.click();
+      btn.textContent = 'Downloaded';
+    }
+    btn.classList.add('done');
+    setTimeout(()=>{ btn.textContent = original; btn.classList.remove('done'); }, 2000);
+  });
+}
+
+buildForm();
+document.getElementById('layoutSelect').addEventListener('change', buildForm);
+</script>
+</body>
+</html>
