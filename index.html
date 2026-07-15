@@ -20,6 +20,7 @@
     --warm-slate:#565A5C;
     --near-black:#0A0A0A;
     --off-white:#F5F4F2;
+    --bone:#F1EDE6;
     --text-scale:1;
   }
   *{box-sizing:border-box;}
@@ -326,6 +327,17 @@
   .s-twocol .col-h{font-family:'Barlow Condensed';font-weight:700;font-size:calc(13px * var(--text-scale));letter-spacing:1px;text-transform:uppercase;color:var(--performance-teal);margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--performance-teal);}
   .s-twocol .col p{font-size:calc(12.5px * var(--text-scale));line-height:1.5;color:var(--warm-slate);white-space:pre-wrap;}
 
+  /* --- minimal / open canvas types --- */
+  .s-open{padding:56px 50px;justify-content:center;position:relative;overflow:hidden;}
+  .s-open .node-mark-bg{position:absolute;bottom:-30px;right:-30px;width:280px;height:280px;opacity:0.14;pointer-events:none;}
+  .s-open .free-text{position:relative;z-index:1;font-size:calc(21px * var(--text-scale));line-height:1.5;white-space:pre-wrap;}
+  .s-openblue{background:var(--athletic-blue);}
+  .s-openblue .free-text{color:#fff;}
+  .s-openteal{background:var(--performance-teal);}
+  .s-openteal .free-text{color:var(--near-black);}
+  .s-openbone{background:var(--bone);}
+  .s-openbone .free-text{color:var(--near-black);}
+
 </style>
 </head>
 <body>
@@ -377,6 +389,11 @@
         <option value="qa">Q&amp;A (3 questions)</option>
         <option value="twocol">Two-Column Read</option>
       </optgroup>
+      <optgroup label="Minimal / Open Canvas">
+        <option value="openblue">Open Canvas — Blue</option>
+        <option value="openteal">Open Canvas — Teal</option>
+        <option value="openbone">Open Canvas — Bone</option>
+      </optgroup>
     </select>
 
     <label>Text Size <span id="textScaleLabel">100%</span></label>
@@ -407,6 +424,18 @@ const nodeMarkWhite = `<svg class="node-mark-sm" viewBox="0 0 100 100" xmlns="ht
   <circle cx="18" cy="68" r="8.4" fill="#00B8B8"/>
   <circle cx="50" cy="50" r="6" fill="#fff"/>
 </svg>`;
+
+function nodeMarkBig(armHub, terminal){
+  return `<svg class="node-mark-bg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <line x1="50" y1="50" x2="50" y2="12" stroke="${armHub}" stroke-width="4"/>
+  <line x1="50" y1="50" x2="82" y2="68" stroke="${armHub}" stroke-width="4"/>
+  <line x1="50" y1="50" x2="18" y2="68" stroke="${armHub}" stroke-width="4"/>
+  <circle cx="50" cy="12" r="8.4" fill="${terminal}"/>
+  <circle cx="82" cy="68" r="8.4" fill="${terminal}"/>
+  <circle cx="18" cy="68" r="8.4" fill="${terminal}"/>
+  <circle cx="50" cy="50" r="6" fill="${armHub}"/>
+</svg>`;
+}
 
 // field schema per layout: [id, label, type ('text'|'textarea'|'image'), default value]
 const schemas = {
@@ -535,6 +564,15 @@ const schemas = {
     ['col1body','Column 1 text','textarea',''],
     ['col2h','Column 2 heading','text',''],
     ['col2body','Column 2 text','textarea','']
+  ],
+  openblue: [
+    ['text','Your text','textarea','']
+  ],
+  openteal: [
+    ['text','Your text','textarea','']
+  ],
+  openbone: [
+    ['text','Your text','textarea','']
   ]
 };
 
@@ -896,6 +934,27 @@ function renderSlide(){
             <div class="col"><div class="col-h">${esc(val('col1h'))}</div><p>${esc(val('col1body'))}</p></div>
             <div class="col"><div class="col-h">${esc(val('col2h'))}</div><p>${esc(val('col2body'))}</p></div>
           </div>
+        </div>`;
+      break;
+    case 'openblue':
+      html = `
+        <div class="s-open s-openblue" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          ${nodeMarkBig('#fff','#00B8B8')}
+          <div class="free-text">${esc(val('text'))}</div>
+        </div>`;
+      break;
+    case 'openteal':
+      html = `
+        <div class="s-open s-openteal" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          ${nodeMarkBig('#fff','#005F87')}
+          <div class="free-text">${esc(val('text'))}</div>
+        </div>`;
+      break;
+    case 'openbone':
+      html = `
+        <div class="s-open s-openbone" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          ${nodeMarkBig('#005F87','#00B8B8')}
+          <div class="free-text">${esc(val('text'))}</div>
         </div>`;
       break;
   }
