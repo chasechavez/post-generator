@@ -337,6 +337,30 @@
   .s-openteal .free-text{color:var(--near-black);}
   .s-openbone{background:var(--bone);}
   .s-openbone .free-text{color:var(--near-black);}
+  .s-openblack{background:var(--near-black);}
+  .s-openblack .free-text{color:#fff;}
+  .s-openslate{background:var(--warm-slate);}
+  .s-openslate .free-text{color:var(--off-white);}
+
+  .s-nodegrid, .s-vectorslope{background:var(--near-black);padding:0;}
+  .texture-band{flex-shrink:0;height:80px;background-color:var(--near-black);}
+  .texture-band.nodegrid{background-image:radial-gradient(circle, rgba(0,184,184,0.4) 1.6px, transparent 1.6px);background-size:20px 20px;}
+  .texture-band.vectorslope{background-image:repeating-linear-gradient(135deg, rgba(0,184,184,0.28) 0px, rgba(0,184,184,0.28) 1.5px, transparent 1.5px, transparent 24px);}
+  .band-content{flex:1;padding:40px 44px;display:flex;flex-direction:column;}
+  .band-content .node-mark-sm{margin-bottom:18px;}
+  .band-content .free-text{color:#fff;font-size:calc(20px * var(--text-scale));line-height:1.55;white-space:pre-wrap;}
+
+  .s-centermark{background:var(--near-black);justify-content:center;align-items:center;text-align:center;padding:50px;}
+  .node-mark-center{width:96px;height:96px;flex-shrink:0;margin:0 auto 24px;display:block;}
+  .s-centermark .caption{font-family:'Barlow Condensed';font-style:italic;font-size:calc(18px * var(--text-scale));color:var(--performance-teal);letter-spacing:0.5px;white-space:pre-wrap;}
+
+  .s-splitcanvas{padding:0;}
+  .s-splitcanvas .cols{flex:1;display:flex;}
+  .s-splitcanvas .col{flex:1;}
+  .s-splitcanvas .col.blue{background:var(--athletic-blue);}
+  .s-splitcanvas .col.bone{background:var(--bone);padding:44px 36px;display:flex;flex-direction:column;}
+  .s-splitcanvas .col.bone .node-mark-sm{margin-bottom:16px;}
+  .s-splitcanvas .free-text{color:var(--near-black);font-size:calc(18px * var(--text-scale));line-height:1.5;white-space:pre-wrap;}
 
 </style>
 </head>
@@ -393,6 +417,12 @@
         <option value="openblue">Open Canvas — Blue</option>
         <option value="openteal">Open Canvas — Teal</option>
         <option value="openbone">Open Canvas — Bone</option>
+        <option value="openblack">Open Canvas — Near Black</option>
+        <option value="openslate">Open Canvas — Warm Slate</option>
+        <option value="nodegrid">Node Grid Texture</option>
+        <option value="vectorslope">Vector Slope Texture</option>
+        <option value="centermark">Centered Mark</option>
+        <option value="splitcanvas">Split Canvas</option>
       </optgroup>
     </select>
 
@@ -425,8 +455,8 @@ const nodeMarkWhite = `<svg class="node-mark-sm" viewBox="0 0 100 100" xmlns="ht
   <circle cx="50" cy="50" r="6" fill="#fff"/>
 </svg>`;
 
-function nodeMarkBig(armHub, terminal){
-  return `<svg class="node-mark-bg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+function nodeMarkBig(armHub, terminal, extraClass){
+  return `<svg class="${extraClass || 'node-mark-bg'}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <line x1="50" y1="50" x2="50" y2="12" stroke="${armHub}" stroke-width="4"/>
   <line x1="50" y1="50" x2="82" y2="68" stroke="${armHub}" stroke-width="4"/>
   <line x1="50" y1="50" x2="18" y2="68" stroke="${armHub}" stroke-width="4"/>
@@ -572,6 +602,24 @@ const schemas = {
     ['text','Your text','textarea','']
   ],
   openbone: [
+    ['text','Your text','textarea','']
+  ],
+  openblack: [
+    ['text','Your text','textarea','']
+  ],
+  openslate: [
+    ['text','Your text','textarea','']
+  ],
+  nodegrid: [
+    ['text','Your text','textarea','']
+  ],
+  vectorslope: [
+    ['text','Your text','textarea','']
+  ],
+  centermark: [
+    ['caption','Caption line (optional)','text','']
+  ],
+  splitcanvas: [
     ['text','Your text','textarea','']
   ]
 };
@@ -955,6 +1003,59 @@ function renderSlide(){
         <div class="s-open s-openbone" style="width:100%;height:100%;display:flex;flex-direction:column;">
           ${nodeMarkBig('#005F87','#00B8B8')}
           <div class="free-text">${esc(val('text'))}</div>
+        </div>`;
+      break;
+    case 'openblack':
+      html = `
+        <div class="s-open s-openblack" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          ${nodeMarkBig('#fff','#00B8B8')}
+          <div class="free-text">${esc(val('text'))}</div>
+        </div>`;
+      break;
+    case 'openslate':
+      html = `
+        <div class="s-open s-openslate" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          ${nodeMarkBig('#F1EDE6','#00B8B8')}
+          <div class="free-text">${esc(val('text'))}</div>
+        </div>`;
+      break;
+    case 'nodegrid':
+      html = `
+        <div class="s-nodegrid" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          <div class="texture-band nodegrid"></div>
+          <div class="band-content">
+            ${nodeMarkWhite}
+            <div class="free-text">${esc(val('text'))}</div>
+          </div>
+        </div>`;
+      break;
+    case 'vectorslope':
+      html = `
+        <div class="s-vectorslope" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          <div class="band-content">
+            ${nodeMarkWhite}
+            <div class="free-text">${esc(val('text'))}</div>
+          </div>
+          <div class="texture-band vectorslope"></div>
+        </div>`;
+      break;
+    case 'centermark':
+      html = `
+        <div class="s-centermark" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          ${nodeMarkBig('#fff','#00B8B8','node-mark-center')}
+          <div class="caption">${esc(val('caption'))}</div>
+        </div>`;
+      break;
+    case 'splitcanvas':
+      html = `
+        <div class="s-splitcanvas" style="width:100%;height:100%;display:flex;flex-direction:column;">
+          <div class="cols">
+            <div class="col blue"></div>
+            <div class="col bone">
+              ${nodeMarkBig('#005F87','#00B8B8','node-mark-sm')}
+              <div class="free-text">${esc(val('text'))}</div>
+            </div>
+          </div>
         </div>`;
       break;
   }
