@@ -79,7 +79,7 @@
     color:var(--warm-slate);
     margin:16px 0 6px;
   }
-  select, input[type=text], textarea, input[type=file]{
+  select, input[type=text], textarea{
     width:100%;
     padding:9px 10px;
     border:1px solid #ccc;
@@ -96,6 +96,22 @@
     border-top:1px dashed #ddd;
     padding-top:4px;
     margin-top:12px;
+  }
+  .field-group.controls-group{
+    background:#f7f6f4;
+    margin:16px -24px 0;
+    padding:16px 24px 20px;
+    border-top:1px solid #e2ded8;
+    border-bottom:1px solid #e2ded8;
+  }
+  .controls-heading{
+    font-family:'Barlow Condensed', Arial, sans-serif;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--athletic-blue);
+    margin:0 0 4px;
   }
 
   .input-row{display:flex;gap:6px;align-items:flex-start;}
@@ -118,8 +134,6 @@
   .mic-btn.active{background:#c0392b;border-color:#c0392b;animation:pulse 1.2s infinite;}
   .mic-btn.active svg *{fill:#fff;}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(192,57,43,0.5);}70%{box-shadow:0 0 0 8px rgba(192,57,43,0);}100%{box-shadow:0 0 0 0 rgba(192,57,43,0);}}
-  .mic-hint{font-size:11px;color:var(--performance-teal);margin-top:4px;display:none;}
-  .mic-hint.show{display:block;}
 
   .download-btn{
     display:block;
@@ -166,206 +180,54 @@
     overflow:hidden;
     display:flex;
     flex-direction:column;
-    background-size:cover;
-    background-position:center;
   }
 
-  .node-mark-sm{width:22px;height:22px;flex-shrink:0;}
-  .brand-wordmark{
-    font-family:'Barlow Condensed', Arial, sans-serif;
-    font-weight:600;
-    font-size:14px;
-    letter-spacing:3px;
-    text-transform:uppercase;
-  }
+  .node-mark-sm{width:24px;height:24px;flex-shrink:0;}
 
-  /* --- shared type styles --- */
-  .s-cover{background:var(--dyn-bg, linear-gradient(160deg, var(--near-black) 0%, #1f2426 100%));padding:48px 44px;justify-content:space-between;}
-  .s-cover .top{display:flex;align-items:center;gap:10px;}
-  .s-cover .brand-wordmark{color:var(--dyn-text, #fff);opacity:0.9;}
-  .s-cover .headline{font-family:'Barlow Condensed';font-weight:700;font-size:calc(52px * var(--headline-scale));line-height:1.03;text-transform:uppercase;color:var(--dyn-text, #fff);white-space:pre-wrap;}
-  .s-cover .headline .accent{color:var(--performance-teal);}
-  .s-cover .tagline{font-family:'Barlow Condensed';font-style:italic;font-size:calc(16px * var(--body-scale));letter-spacing:0.5px;color:var(--performance-teal);}
-  .tagline-text{text-transform:none !important;font-style:italic;}
+  /* ===== UNIFIED SLIDE SHELL ===== */
+  .s-shell{padding:0;position:relative;background:var(--dyn-bg, var(--near-black));}
+  .s-shell .node-mark-bg{position:absolute;bottom:-30px;right:-30px;width:280px;height:280px;opacity:0.14;pointer-events:none;}
+  .node-mark-center{width:78px;height:78px;flex-shrink:0;margin:0 auto 22px;display:block;}
+  .shell-top-row{display:flex;margin-bottom:18px;}
+  .shell-top-row.left{justify-content:flex-start;}
+  .shell-top-row.right{justify-content:flex-end;}
 
-  .s-insight{background:var(--dyn-bg, var(--off-white));padding:56px 48px;justify-content:center;}
-  .s-insight .rule{display:flex;gap:6px;margin-bottom:24px;}
-  .s-insight .rule span{width:5px;height:34px;background:var(--dyn-text, var(--near-black));}
-  .s-insight .headline{font-family:'Barlow Condensed';font-weight:700;font-size:calc(34px * var(--headline-scale));line-height:1.08;text-transform:uppercase;color:var(--dyn-text, var(--near-black));margin-bottom:20px;white-space:pre-wrap;}
-  .s-insight .body{font-size:calc(18px * var(--body-scale));line-height:1.45;color:var(--dyn-text-soft, var(--warm-slate));font-weight:500;white-space:pre-wrap;}
+  .shell-content{position:relative;z-index:1;flex:1;padding:52px 46px;display:flex;flex-direction:column;width:100%;min-height:0;}
+  .shell-content.center-text{justify-content:center;align-items:center;text-align:center;}
 
-  .s-breakdown{background:var(--dyn-bg, var(--athletic-blue));color:var(--dyn-text, #fff);}
-  .s-breakdown .header-row{display:flex;justify-content:space-between;align-items:center;padding:20px 32px 16px;}
-  .s-breakdown .brand-wordmark{color:var(--dyn-text-soft, rgba(255,255,255,0.85));font-size:calc(11px * var(--body-scale));letter-spacing:3px;}
-  .s-breakdown .title-bar{background:var(--off-white);padding:18px 32px;}
-  .s-breakdown .title-bar h2{font-family:'Barlow Condensed';font-weight:700;font-size:calc(25px * var(--headline-scale));line-height:1.1;text-transform:uppercase;color:var(--near-black);margin:0;white-space:pre-wrap;}
-  .s-breakdown ul{padding:24px 32px 0;margin:0;list-style:none;flex:1;}
-  .s-breakdown li{font-size:calc(16px * var(--body-scale));line-height:1.4;margin-bottom:16px;position:relative;padding-left:20px;}
-  .s-breakdown li:before{content:"";position:absolute;left:0;top:8px;width:8px;height:8px;background:var(--performance-teal);border-radius:50%;}
-
-  .s-bold{background:var(--dyn-bg, var(--warm-slate));padding:52px 44px;justify-content:space-between;}
-  .s-bold .headline{font-family:'Barlow Condensed';font-weight:800;font-size:calc(40px * var(--headline-scale));line-height:1.06;text-transform:uppercase;color:var(--performance-teal);white-space:pre-wrap;}
-  .s-bold .sub{font-size:calc(17px * var(--body-scale));line-height:1.5;color:var(--dyn-text, #fff);margin-top:22px;white-space:pre-wrap;}
-  .s-bold .brand-wordmark{color:var(--dyn-text-soft, rgba(255,255,255,0.6));margin-top:24px;}
-
-  .s-whyitmatters{background:var(--dyn-bg, var(--near-black));padding:44px 40px;}
-  .s-whyitmatters .top-rule{width:60px;height:3px;background:var(--performance-teal);margin-bottom:18px;}
-  .s-whyitmatters h2{font-family:'Barlow Condensed';font-weight:800;font-size:calc(30px * var(--headline-scale));line-height:1.08;text-transform:uppercase;color:var(--dyn-text, #fff);margin:0 0 22px;white-space:pre-wrap;}
-  .s-whyitmatters ul{list-style:none;padding:0;margin:0;flex:1;}
-  .s-whyitmatters li{font-size:calc(15px * var(--body-scale));line-height:1.4;color:var(--dyn-text-soft, #d8d6d3);margin-bottom:16px;padding-left:18px;position:relative;}
-  .s-whyitmatters li:before{content:"—";position:absolute;left:0;color:var(--performance-teal);}
-  .s-whyitmatters .brand-wordmark{color:var(--dyn-text-soft, rgba(255,255,255,0.5));margin-top:auto;align-self:center;padding-top:16px;}
-
-  .s-quote{background:var(--dyn-bg, var(--near-black));padding:48px 44px;justify-content:center;align-items:center;text-align:center;}
-  .s-quote .label{font-family:'Barlow Condensed';font-size:calc(12px * var(--body-scale));font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--performance-teal);margin-bottom:28px;align-self:flex-start;}
-  .s-quote .quote-text{font-size:calc(23px * var(--headline-scale));line-height:1.4;color:var(--dyn-text, #fff);white-space:pre-wrap;}
-  .s-quote .attribution{margin-top:24px;font-family:'Barlow Condensed';font-size:calc(18px * var(--body-scale));color:var(--performance-teal);}
-
-  .s-beforeafter{background:var(--dyn-bg, var(--off-white));padding:0;}
-  .s-beforeafter .header{padding:22px 32px 16px;}
-  .s-beforeafter .header h2{font-family:'Barlow Condensed';font-weight:700;font-size:calc(24px * var(--headline-scale));text-transform:uppercase;color:var(--dyn-text, var(--near-black));margin:0;white-space:pre-wrap;}
-  .s-beforeafter .cols{flex:1;display:flex;}
-  .s-beforeafter .col{flex:1;padding:20px 22px;}
-  .s-beforeafter .col.before{background:var(--warm-slate);color:#fff;}
-  .s-beforeafter .col.after{background:var(--athletic-blue);color:#fff;}
-  .s-beforeafter .col-label{font-family:'Barlow Condensed';font-size:calc(13px * var(--body-scale));letter-spacing:2px;text-transform:uppercase;opacity:0.8;margin-bottom:14px;}
-  .s-beforeafter .col p{font-size:calc(14px * var(--body-scale));line-height:1.45;margin:0 0 10px;white-space:pre-wrap;}
-
-  .s-mistake{background:var(--dyn-bg, var(--near-black));padding:36px 36px 30px;}
-  .s-mistake h2{font-family:'Barlow Condensed';font-weight:800;font-size:calc(26px * var(--headline-scale));text-transform:uppercase;color:var(--dyn-text, #fff);margin:0 0 24px;white-space:pre-wrap;}
-  .s-mistake .row{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;}
-  .s-mistake .tag{font-family:'Barlow Condensed';font-size:calc(12px * var(--body-scale));font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:2px;flex-shrink:0;margin-top:2px;}
-  .s-mistake .tag.wrong{background:#5c2a2a;color:#f2b8b8;}
-  .s-mistake .tag.right{background:#0d3d3d;color:#7fe0d8;}
-  .s-mistake .row p{font-size:calc(15px * var(--body-scale));line-height:1.4;color:var(--dyn-text-soft, #e5e3e0);margin:0;white-space:pre-wrap;}
-  .s-mistake .brand-wordmark{color:var(--dyn-text-soft, rgba(255,255,255,0.5));margin-top:auto;align-self:center;padding-top:10px;}
-
-  .s-rts{background:var(--dyn-bg, var(--performance-teal));padding:40px 36px;}
-  .s-rts h2{font-family:'Barlow Condensed';font-weight:800;font-size:calc(26px * var(--headline-scale));text-transform:uppercase;color:var(--dyn-text, var(--near-black));margin:0 0 22px;white-space:pre-wrap;}
-  .s-rts ul{list-style:none;padding:0;margin:0;flex:1;}
-  .s-rts li{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;font-size:calc(15px * var(--body-scale));line-height:1.4;color:var(--dyn-text, var(--near-black));font-weight:500;white-space:pre-wrap;}
-  .s-rts .box{width:20px;height:20px;border:2.5px solid var(--dyn-text, var(--near-black));border-radius:3px;flex-shrink:0;margin-top:2px;}
-  .s-rts .brand-wordmark{color:var(--dyn-text-soft, rgba(20,20,20,0.55));align-self:center;}
-
-  .s-result{background:var(--dyn-bg, var(--near-black));padding:44px 40px;justify-content:space-between;}
-  .s-result .eyebrow{font-family:'Barlow Condensed';font-size:calc(13px * var(--body-scale));letter-spacing:2px;text-transform:uppercase;color:var(--performance-teal);}
-  .s-result .metric{font-family:'Barlow Condensed';font-weight:800;font-size:calc(82px * var(--headline-scale));color:var(--dyn-text, #fff);line-height:1;margin:14px 0 6px;}
-  .s-result .metric-label{font-size:calc(16px * var(--body-scale));color:var(--dyn-text-soft, #d8d6d3);font-weight:500;margin-bottom:26px;white-space:pre-wrap;}
-  .s-result .context{font-size:calc(14px * var(--body-scale));line-height:1.5;color:var(--dyn-text-soft, #b8b6b3);border-top:1px solid #333;padding-top:18px;white-space:pre-wrap;}
-
-  .s-define{background:var(--dyn-bg, var(--athletic-blue));padding:44px 40px;justify-content:center;}
-  .s-define .term{font-family:'Barlow Condensed';font-weight:800;font-size:calc(36px * var(--headline-scale));text-transform:uppercase;color:var(--dyn-text, #fff);margin-bottom:6px;}
-  .s-define .pos{font-size:calc(14px * var(--body-scale));font-style:italic;color:var(--performance-teal);margin-bottom:20px;}
-  .s-define .def{font-size:calc(17px * var(--body-scale));line-height:1.5;color:var(--dyn-text-soft, #eaf3f7);white-space:pre-wrap;}
-  .s-define .why{margin-top:20px;font-size:calc(13px * var(--body-scale));line-height:1.5;color:var(--dyn-text-soft, rgba(255,255,255,0.75));border-left:3px solid var(--performance-teal);padding-left:14px;white-space:pre-wrap;}
-
-  .s-progress{background:var(--dyn-bg, var(--off-white));padding:36px 34px;}
-  .s-progress h2{font-family:'Barlow Condensed';font-weight:700;font-size:calc(23px * var(--headline-scale));text-transform:uppercase;color:var(--dyn-text, var(--near-black));margin:0 0 20px;white-space:pre-wrap;}
-  .s-progress .phase{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #ddd8d3;}
-  .s-progress .phase:last-child{border-bottom:none;}
-  .s-progress .phase-num{font-family:'Barlow Condensed';font-weight:800;font-size:calc(24px * var(--headline-scale));color:var(--performance-teal);width:36px;flex-shrink:0;}
-  .s-progress .phase-title{font-family:'Barlow Condensed';font-weight:600;font-size:calc(15px * var(--body-scale));text-transform:uppercase;color:var(--dyn-text, var(--near-black));}
-  .s-progress .phase-detail{font-size:calc(12px * var(--body-scale));color:var(--dyn-text-soft, var(--warm-slate));margin-top:2px;white-space:pre-wrap;}
-
-  /* --- new photo-based types --- */
-  .s-photocover{padding:40px 36px;justify-content:space-between;background-color:#333;}
-  .s-photocover:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.65) 100%);}
-  .s-photocover > *{position:relative;z-index:1;}
-  .s-photocover .top-block{text-align:center;margin-top:30px;}
-  .s-photocover .series-title{font-family:'Barlow Condensed';font-weight:800;font-size:calc(46px * var(--headline-scale));letter-spacing:1px;text-transform:uppercase;color:#fff;}
-  .s-photocover .subtitle{font-family:'Barlow Condensed';font-weight:500;font-style:italic;font-size:calc(17px * var(--body-scale));letter-spacing:2px;text-transform:uppercase;color:#fff;margin-top:10px;}
-  .s-photocover .bottom-block{display:flex;align-items:center;justify-content:center;gap:10px;}
-  .s-photocover .brand-wordmark{color:#fff;}
-
-  .s-photobanner{background-color:#333;}
-  .s-photobanner:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.05) 55%, rgba(0,0,0,0.55) 100%);}
-  .s-photobanner > *{position:relative;z-index:1;}
-  .s-photobanner .top-row{display:flex;align-items:center;gap:8px;padding:26px 28px 0;}
-  .s-photobanner .series-label{font-family:'Barlow Condensed';font-weight:700;font-size:calc(15px * var(--body-scale));letter-spacing:2px;text-transform:uppercase;color:#fff;}
-  .s-photobanner .spacer{flex:1;}
-  .s-photobanner .banner{margin-top:auto;background:rgba(0,95,135,0.88);padding:26px 28px;}
-  .s-photobanner .banner h2{font-family:'Barlow Condensed';font-weight:800;font-size:calc(30px * var(--headline-scale));line-height:1.1;text-transform:uppercase;color:#fff;margin:0;white-space:pre-wrap;}
-
-  .s-quotehighlight{padding:52px 40px;justify-content:center;background-color:#222;}
-  .s-quotehighlight:before{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.4);}
-  .s-quotehighlight > *{position:relative;z-index:1;}
-  .s-quotehighlight .top-row{display:flex;align-items:center;gap:8px;margin-bottom:26px;}
-  .s-quotehighlight .brand-wordmark{color:#fff;}
-  .s-quotehighlight .quote-highlight{
-    font-family:'Barlow Condensed';
-    font-weight:700;
-    font-size:calc(26px * var(--body-scale));
-    line-height:1.55;
-    text-transform:uppercase;
-    color:#fff;
-    background:var(--performance-teal);
-    box-decoration-break:clone;
-    -webkit-box-decoration-break:clone;
-    padding:4px 8px;
-    white-space:pre-wrap;
-  }
-  .s-quotehighlight .attribution{margin-top:22px;font-family:'Barlow Condensed';font-size:calc(16px * var(--body-scale));letter-spacing:1px;text-transform:uppercase;color:#fff;}
-
-  /* --- long-form types --- */
-  .s-article{background:var(--dyn-bg, var(--off-white));padding:44px 40px;overflow-y:auto;}
-  .s-article .eyebrow{font-family:'Barlow Condensed';font-size:calc(12px * var(--body-scale));font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--performance-teal);margin-bottom:10px;}
-  .s-article .headline{font-family:'Barlow Condensed';font-weight:700;font-size:calc(26px * var(--headline-scale));line-height:1.15;text-transform:uppercase;color:var(--dyn-text, var(--near-black));margin-bottom:16px;white-space:pre-wrap;}
-  .s-article p{font-size:calc(14px * var(--body-scale));line-height:1.55;color:var(--dyn-text-soft, var(--warm-slate));margin:0 0 12px;white-space:pre-wrap;}
-
-  .s-extlist{background:var(--dyn-bg, var(--near-black));padding:38px 36px;}
-  .s-extlist h2{font-family:'Barlow Condensed';font-weight:800;font-size:calc(22px * var(--headline-scale));text-transform:uppercase;color:var(--dyn-text, #fff);margin:0 0 18px;white-space:pre-wrap;}
-  .s-extlist ol{list-style:none;padding:0;margin:0;flex:1;counter-reset:extlist;}
-  .s-extlist li{counter-increment:extlist;display:flex;gap:10px;font-size:calc(13px * var(--body-scale));line-height:1.4;color:var(--dyn-text-soft, #e5e3e0);margin-bottom:10px;white-space:pre-wrap;}
-  .s-extlist li:before{content:counter(extlist);font-family:'Barlow Condensed';font-weight:800;color:var(--performance-teal);flex-shrink:0;width:18px;}
-
-  .s-qa{background:var(--dyn-bg, var(--off-white));padding:40px 38px;overflow-y:auto;}
-  .s-qa h2{font-family:'Barlow Condensed';font-weight:700;font-size:calc(22px * var(--headline-scale));text-transform:uppercase;color:var(--dyn-text, var(--near-black));margin:0 0 18px;white-space:pre-wrap;}
-  .s-qa .pair{margin-bottom:14px;}
-  .s-qa .q{font-family:'Barlow Condensed';font-weight:700;font-size:calc(15px * var(--body-scale));color:var(--dyn-text, var(--athletic-blue));margin-bottom:3px;white-space:pre-wrap;}
-  .s-qa .a{font-size:calc(13px * var(--body-scale));line-height:1.5;color:var(--dyn-text-soft, var(--warm-slate));white-space:pre-wrap;}
-
-  .s-twocol{background:var(--dyn-bg, var(--off-white));padding:36px 34px;}
-  .s-twocol h2{font-family:'Barlow Condensed';font-weight:700;font-size:calc(22px * var(--headline-scale));text-transform:uppercase;color:var(--dyn-text, var(--near-black));margin:0 0 18px;white-space:pre-wrap;}
-  .s-twocol .cols{flex:1;display:flex;gap:22px;}
-  .s-twocol .col{flex:1;}
-  .s-twocol .col-h{font-family:'Barlow Condensed';font-weight:700;font-size:calc(13px * var(--body-scale));letter-spacing:1px;text-transform:uppercase;color:var(--performance-teal);margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--performance-teal);}
-  .s-twocol .col p{font-size:calc(12.5px * var(--body-scale));line-height:1.5;color:var(--dyn-text-soft, var(--warm-slate));white-space:pre-wrap;}
-
-  /* --- minimal / open canvas types --- */
-  .s-open{padding:56px 50px;justify-content:center;position:relative;overflow:hidden;}
-  .s-open .node-mark-bg{position:absolute;bottom:-30px;right:-30px;width:280px;height:280px;opacity:0.14;pointer-events:none;}
-  .s-open .free-text{position:relative;z-index:1;font-size:calc(21px * var(--headline-scale));line-height:1.5;white-space:pre-wrap;}
-  .s-openblue{background:var(--athletic-blue);}
-  .s-openblue .free-text{color:#fff;}
-  .s-openteal{background:var(--performance-teal);}
-  .s-openteal .free-text{color:var(--near-black);}
-  .s-openbone{background:var(--bone);}
-  .s-openbone .free-text{color:var(--near-black);}
-  .s-openblack{background:var(--near-black);}
-  .s-openblack .free-text{color:#fff;}
-  .s-openslate{background:var(--warm-slate);}
-  .s-openslate .free-text{color:var(--off-white);}
-  .s-openwhite{background:var(--off-white);}
-  .s-openwhite .free-text{color:var(--near-black);}
-  .s-open.center-placement{justify-content:center;align-items:center;text-align:center;}
-
-  .s-nodegrid, .s-vectorslope{background:var(--near-black);padding:0;}
-  .texture-band{flex-shrink:0;height:80px;background-color:var(--near-black);}
-  .texture-band.nodegrid{background-image:radial-gradient(circle, rgba(0,184,184,0.4) 1.6px, transparent 1.6px);background-size:20px 20px;}
+  .texture-band{flex-shrink:0;height:74px;display:flex;align-items:center;padding:0 26px;background-color:var(--dyn-bg, var(--near-black));}
+  .texture-band.nodegrid{background-image:radial-gradient(circle, rgba(0,184,184,0.4) 1.5px, transparent 1.5px);background-size:20px 20px;}
   .texture-band.vectorslope{background-image:repeating-linear-gradient(135deg, rgba(0,184,184,0.28) 0px, rgba(0,184,184,0.28) 1.5px, transparent 1.5px, transparent 24px);}
-  .band-content{flex:1;padding:40px 44px;display:flex;flex-direction:column;}
-  .band-content .node-mark-sm{margin-bottom:18px;}
-  .band-content .free-text{color:#fff;font-size:calc(20px * var(--headline-scale));line-height:1.55;white-space:pre-wrap;}
+  .texture-band.pitchlines{background-image:repeating-linear-gradient(180deg, rgba(0,184,184,0.22) 0px, rgba(0,184,184,0.22) 1px, transparent 1px, transparent 9px);}
 
-  .node-mark-center{width:96px;height:96px;flex-shrink:0;margin:0 auto 24px;display:block;}
+  /* --- content elements (shared across all shapes) --- */
+  .shell-content .headline{font-family:'Barlow Condensed';font-weight:700;font-size:calc(34px * var(--headline-scale));line-height:1.08;text-transform:uppercase;color:var(--dyn-text, #fff);margin-bottom:16px;white-space:pre-wrap;}
+  .shell-content .body-p{font-size:calc(16px * var(--body-scale));line-height:1.5;color:var(--dyn-text-soft, rgba(255,255,255,0.75));margin:0 0 12px;white-space:pre-wrap;}
+  .shell-content .free-text{font-size:calc(22px * var(--headline-scale));line-height:1.5;color:var(--dyn-text, #fff);white-space:pre-wrap;}
+  .shell-content .quote-text{font-size:calc(25px * var(--headline-scale));line-height:1.4;color:var(--dyn-text, #fff);white-space:pre-wrap;}
+  .shell-content .attribution{margin-top:22px;font-family:'Barlow Condensed';font-size:calc(15px * var(--body-scale));letter-spacing:0.5px;color:var(--performance-teal);}
+  .shell-content .eyebrow{font-family:'Barlow Condensed';font-size:calc(13px * var(--body-scale));letter-spacing:2px;text-transform:uppercase;color:var(--performance-teal);margin-bottom:10px;}
+  .shell-content .metric{font-family:'Barlow Condensed';font-weight:800;font-size:calc(74px * var(--headline-scale));color:var(--dyn-text, #fff);line-height:1;margin-bottom:10px;}
+  .shell-content .metric-label{font-size:calc(16px * var(--body-scale));color:var(--dyn-text-soft, rgba(255,255,255,0.75));margin-bottom:16px;font-weight:500;white-space:pre-wrap;}
+  .shell-content .context{font-size:calc(13px * var(--body-scale));line-height:1.5;color:var(--dyn-text-soft, rgba(255,255,255,0.6));border-top:1px solid rgba(128,128,128,0.35);padding-top:16px;white-space:pre-wrap;margin-top:auto;}
 
-  .s-splitcanvas{padding:0;}
-  .s-splitcanvas .cols{flex:1;display:flex;}
-  .s-splitcanvas .col{flex:1;}
-  .s-splitcanvas .col.blue{background:var(--athletic-blue);}
-  .s-splitcanvas .col.bone{background:var(--bone);padding:44px 36px;display:flex;flex-direction:column;}
-  .s-splitcanvas .col.bone .node-mark-sm{margin-bottom:16px;}
-  .s-splitcanvas .free-text{color:var(--near-black);font-size:calc(18px * var(--headline-scale));line-height:1.5;white-space:pre-wrap;}
+  .shell-content .split-cols{display:flex;gap:26px;flex:1;margin-top:6px;}
+  .shell-content .split-col{flex:1;}
+  .shell-content .split-col-h{font-family:'Barlow Condensed';font-weight:700;font-size:calc(13px * var(--body-scale));letter-spacing:1.5px;text-transform:uppercase;color:var(--performance-teal);margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--performance-teal);}
+  .shell-content .split-col p{font-size:calc(13.5px * var(--body-scale));line-height:1.5;color:var(--dyn-text-soft, rgba(255,255,255,0.75));white-space:pre-wrap;}
+
+  /* --- bullet / symbol styles --- */
+  .bullet-list{list-style:none;padding:0;margin:0;flex:1;}
+  .bullet-list li{position:relative;padding-left:28px;margin-bottom:14px;font-size:calc(15.5px * var(--body-scale));line-height:1.4;color:var(--dyn-text, #fff);white-space:pre-wrap;}
+  .bullet-list.bullet-dot li:before{content:"";position:absolute;left:0;top:7px;width:7px;height:7px;border-radius:50%;background:var(--performance-teal);}
+  .bullet-list.bullet-dash li:before{content:"—";position:absolute;left:0;color:var(--performance-teal);}
+  .bullet-list.bullet-number{counter-reset:bl;}
+  .bullet-list.bullet-number li{counter-increment:bl;}
+  .bullet-list.bullet-number li:before{content:counter(bl);position:absolute;left:0;font-family:'Barlow Condensed';font-weight:800;color:var(--performance-teal);}
+  .bullet-list.bullet-check li:before{content:"";position:absolute;left:0;top:1px;width:16px;height:16px;border:2.5px solid var(--performance-teal);border-radius:3px;}
+  .bullet-list.bullet-arrow li:before{content:"→";position:absolute;left:0;color:var(--performance-teal);font-weight:700;}
+  .bullet-list.bullet-node li{padding-left:24px;}
+  .bullet-list.bullet-node li .mini-node{position:absolute;left:0;top:6px;width:9px;height:9px;border-radius:50%;background:var(--performance-teal);}
 
 </style>
 </head>
@@ -387,43 +249,16 @@
       </svg>
       <h1>Post Slide Generator</h1>
     </div>
-    <div class="sub">Pick a layout, drop in your topic, download.</div>
+    <div class="sub">Pick a shape, style it your way, download.</div>
 
-    <label>Layout</label>
+    <label>Content Shape</label>
     <select id="layoutSelect">
-      <optgroup label="Photo-based">
-        <option value="photocover">Series Cover (photo + title)</option>
-        <option value="photobanner">Photo + Bottom Banner</option>
-        <option value="quotehighlight">Quote Highlight (photo)</option>
-      </optgroup>
-      <optgroup label="Core">
-        <option value="cover">Cover (dark, no photo)</option>
-        <option value="insight">Insight / Finding</option>
-        <option value="breakdown">Breakdown (bullets)</option>
-        <option value="bold">Bold Statement</option>
-        <option value="whyitmatters">Why It Matters</option>
-        <option value="quote">Quote (no photo)</option>
-      </optgroup>
-      <optgroup label="Rehab & Performance">
-        <option value="beforeafter">Before / After Protocol</option>
-        <option value="mistake">Mistake vs. Better Approach</option>
-        <option value="rts">Return-to-Sport Checklist</option>
-        <option value="result">Case Result / Metric</option>
-        <option value="define">Term / Concept Breakdown</option>
-        <option value="progress">Progression / Phase Framework</option>
-      </optgroup>
-      <optgroup label="Long-Form">
-        <option value="article">Article Excerpt (headline + paragraphs)</option>
-        <option value="extlist">Extended List (up to 6 items)</option>
-        <option value="qa">Q&amp;A (3 questions)</option>
-        <option value="twocol">Two-Column Read</option>
-      </optgroup>
-      <optgroup label="Free Text">
-        <option value="freetext" selected>Free Text Canvas (pick your colors)</option>
-        <option value="nodegrid">Node Grid Texture</option>
-        <option value="vectorslope">Vector Slope Texture</option>
-        <option value="splitcanvas">Split Canvas</option>
-      </optgroup>
+      <option value="freetext" selected>Free Text (one open block)</option>
+      <option value="body">Headline + Body</option>
+      <option value="list">Headline + List</option>
+      <option value="quote">Quote</option>
+      <option value="stat">Stat / Number</option>
+      <option value="split">Two-Column Split</option>
     </select>
 
     <label>Title Size <span id="headlineScaleLabel">100%</span></label>
@@ -434,7 +269,7 @@
     <div id="formFields"></div>
 
     <button class="download-btn" onclick="downloadSlide()">Download PNG</button>
-    <div class="reset-note">Tap the mic next to any field to dictate instead of typing. Your entries stay on screen as you switch layouts to compare — refresh the page to start fully clean. Photos aren't saved anywhere; they only live in your browser tab.</div>
+    <div class="reset-note">Tap the mic next to any field to dictate instead of typing. Background, logo, and placement combine freely — mix and match for as many looks as you need. Refresh the page to start fully clean.</div>
   </div>
 
   <!-- ================= RIGHT PANEL / PREVIEW ================= -->
@@ -447,17 +282,7 @@
 </div>
 
 <script>
-const nodeMarkWhite = `<svg class="node-mark-sm" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-  <line x1="50" y1="50" x2="50" y2="12" stroke="var(--logo-arm, #fff)" stroke-width="4"/>
-  <line x1="50" y1="50" x2="82" y2="68" stroke="var(--logo-arm, #fff)" stroke-width="4"/>
-  <line x1="50" y1="50" x2="18" y2="68" stroke="var(--logo-arm, #fff)" stroke-width="4"/>
-  <circle cx="50" cy="12" r="8.4" fill="var(--logo-terminal, #00B8B8)"/>
-  <circle cx="82" cy="68" r="8.4" fill="var(--logo-terminal, #00B8B8)"/>
-  <circle cx="18" cy="68" r="8.4" fill="var(--logo-terminal, #00B8B8)"/>
-  <circle cx="50" cy="50" r="6" fill="var(--logo-arm, #fff)"/>
-</svg>`;
-
-// Shared color options for the Background / Logo Color swatch pickers
+// ===== Shared style vocabulary =====
 const BG_SWATCHES = [
   {value:'blue',label:'Athletic Blue',color:'#005F87'},
   {value:'teal',label:'Performance Teal',color:'#00B8B8'},
@@ -471,6 +296,29 @@ const LOGO_SWATCHES = [
   {value:'blue',label:'Athletic Blue',color:'#005F87'},
   {value:'bone',label:'Bone',color:'#F1EDE6'}
 ];
+const PLACEMENT_OPTIONS = [
+  {value:'corner',label:'Corner Watermark'},
+  {value:'centered',label:'Centered Above Text'},
+  {value:'top-left',label:'Top Left'},
+  {value:'top-right',label:'Top Right'},
+  {value:'texture-top',label:'Textured Band (Top)'},
+  {value:'texture-bottom',label:'Textured Band (Bottom)'},
+  {value:'none',label:'None'}
+];
+const TEXTURE_OPTIONS = [
+  {value:'nodegrid',label:'Node Grid'},
+  {value:'vectorslope',label:'Vector Slope'},
+  {value:'pitchlines',label:'Pitch Lines'}
+];
+const BULLET_OPTIONS = [
+  {value:'dot',label:'Dot'},
+  {value:'dash',label:'Dash'},
+  {value:'number',label:'Number'},
+  {value:'check',label:'Checkbox'},
+  {value:'arrow',label:'Arrow'},
+  {value:'node',label:'Node Mark'}
+];
+
 const BG_COLOR_CSS = {blue:'#005F87', teal:'#00B8B8', black:'#0A0A0A', slate:'#565A5C', bone:'#F1EDE6', white:'#F5F4F2'};
 const BG_TEXT_PAIR = {
   blue:  {text:'#fff', soft:'rgba(255,255,255,0.7)'},
@@ -498,7 +346,7 @@ function dynVarsStyle(bgKey, logoKey){
   return css;
 }
 
-function nodeMarkBig(armHub, terminal, extraClass){
+function nodeMarkSvg(armHub, terminal, extraClass){
   return `<svg class="${extraClass || 'node-mark-bg'}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <line x1="50" y1="50" x2="50" y2="12" stroke="${armHub}" stroke-width="4"/>
   <line x1="50" y1="50" x2="82" y2="68" stroke="${armHub}" stroke-width="4"/>
@@ -510,177 +358,99 @@ function nodeMarkBig(armHub, terminal, extraClass){
 </svg>`;
 }
 
-// field schema per layout: [id, label, type ('text'|'textarea'|'image'), default value]
+// Builds the full slide wrapper for any content shape: background, logo (in whichever
+// placement was chosen, including textured bands), and the shape-specific inner HTML.
+function buildSlideShell(bgKey, logoKey, placement, textureKey, contentHtml, align){
+  const styleVars = dynVarsStyle(bgKey, logoKey);
+  const showLogo = !!logoKey && placement && placement !== 'none';
+  const armVar = 'var(--logo-arm, #fff)';
+  const termVar = 'var(--logo-terminal, #00B8B8)';
+  const contentClass = 'shell-content' + (align === 'center' ? ' center-text' : '');
+
+  if(showLogo && (placement === 'texture-top' || placement === 'texture-bottom')){
+    const mark = nodeMarkSvg(armVar, termVar, 'node-mark-sm');
+    const band = `<div class="texture-band ${textureKey || 'nodegrid'}">${mark}</div>`;
+    const body = `<div class="${contentClass}">${contentHtml}</div>`;
+    const inner = placement === 'texture-top' ? band + body : body + band;
+    return `<div class="s-shell" style="width:100%;height:100%;display:flex;flex-direction:column;${styleVars}">${inner}</div>`;
+  }
+
+  let cornerMark = '', inlineMark = '';
+  if(showLogo){
+    if(placement === 'corner') cornerMark = nodeMarkSvg(armVar, termVar, 'node-mark-bg');
+    else if(placement === 'centered') inlineMark = nodeMarkSvg(armVar, termVar, 'node-mark-center');
+    else if(placement === 'top-left') inlineMark = `<div class="shell-top-row left">${nodeMarkSvg(armVar, termVar, 'node-mark-sm')}</div>`;
+    else if(placement === 'top-right') inlineMark = `<div class="shell-top-row right">${nodeMarkSvg(armVar, termVar, 'node-mark-sm')}</div>`;
+  }
+
+  return `<div class="s-shell" style="width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;${styleVars}">
+    ${cornerMark}
+    <div class="${contentClass}">${inlineMark}${contentHtml}</div>
+  </div>`;
+}
+
+// Renders a bullet/numbered list with the chosen symbol style.
+function buildBulletList(items, style){
+  const rows = items.filter(t => t).map(t => {
+    if(style === 'node') return `<li><span class="mini-node"></span>${esc(t)}</li>`;
+    return `<li>${esc(t)}</li>`;
+  }).join('');
+  return `<ul class="bullet-list bullet-${style || 'dot'}">${rows}</ul>`;
+}
+
+// Fields every content shape shares: background, logo color/placement, texture style.
+function styleFields(bgDefault){
+  return [
+    ['bg','Background','swatch',bgDefault,BG_SWATCHES],
+    ['logo','Logo Color','swatch','white',LOGO_SWATCHES],
+    ['placement','Logo Placement','select','corner',PLACEMENT_OPTIONS],
+    ['texture','Texture Style (for textured band)','select','nodegrid',TEXTURE_OPTIONS]
+  ];
+}
+
 const schemas = {
-  cover: [
-    ['bg','Background','swatch','black',BG_SWATCHES],
-    ['logo','Logo Color','swatch','white',LOGO_SWATCHES],
-    ['title','Headline (use \\n for line breaks)','textarea',''],
-    ['accent','Accent line (teal, optional)','text',''],
-    ['tagline','Bottom tagline','text','Build what stays.'],
-    ['wordmark','Wordmark','text','Chase Chavez']
+  freetext: [
+    ...styleFields('black'),
+    ['text','Your text','textarea','']
   ],
-  insight: [
-    ['bg','Background','swatch','white',BG_SWATCHES],
+  body: [
+    ...styleFields('white'),
     ['headline','Headline','textarea',''],
-    ['body','Body text','textarea','']
+    ['body1','Paragraph 1','textarea',''],
+    ['body2','Paragraph 2 (optional)','textarea','']
   ],
-  breakdown: [
-    ['bg','Background','swatch','blue',BG_SWATCHES],
-    ['logo','Logo Color','swatch','white',LOGO_SWATCHES],
-    ['handle','Small handle/label','text','@chasechavezdpt'],
-    ['title','Title bar headline','textarea',''],
-    ['b1','Bullet 1','text',''],
-    ['b2','Bullet 2','text',''],
-    ['b3','Bullet 3','text',''],
-    ['b4','Bullet 4','text','']
-  ],
-  bold: [
-    ['bg','Background','swatch','slate',BG_SWATCHES],
-    ['headline','Bold claim','textarea',''],
-    ['sub','Supporting context','textarea',''],
-    ['wordmark','Wordmark','text','CHASE CHAVEZ · PT · DPT · SCS']
-  ],
-  whyitmatters: [
-    ['bg','Background','swatch','black',BG_SWATCHES],
-    ['title','Headline','textarea',''],
-    ['b1','Bullet 1','text',''],
-    ['b2','Bullet 2','text',''],
-    ['b3','Bullet 3','text',''],
-    ['b4','Bullet 4','text',''],
-    ['wordmark','Bottom line','text','Build what stays.']
-  ],
-  quote: [
-    ['bg','Background','swatch','black',BG_SWATCHES],
-    ['quote','Quote text','textarea',''],
-    ['attribution','Attribution','text','— Chase Chavez, PT · DPT · SCS']
-  ],
-  beforeafter: [
-    ['bg','Background','swatch','white',BG_SWATCHES],
-    ['title','Protocol name','text',''],
-    ['beforeP1','Before — point 1','textarea',''],
-    ['beforeP2','Before — point 2','textarea',''],
-    ['afterP1','After — point 1','textarea',''],
-    ['afterP2','After — point 2','textarea','']
-  ],
-  mistake: [
-    ['bg','Background','swatch','black',BG_SWATCHES],
-    ['title','Headline','textarea',''],
-    ['common','Common approach','textarea',''],
-    ['better','Better approach','textarea',''],
-    ['why','Why it matters','textarea','']
-  ],
-  rts: [
-    ['bg','Background','swatch','teal',BG_SWATCHES],
-    ['title','Headline','textarea',''],
+  list: [
+    ...styleFields('black'),
+    ['bulletStyle','Bullet Style','select','dot',BULLET_OPTIONS],
+    ['headline','Headline','textarea',''],
     ['i1','Item 1','text',''],
     ['i2','Item 2','text',''],
     ['i3','Item 3','text',''],
-    ['i4','Item 4','text','']
+    ['i4','Item 4','text',''],
+    ['i5','Item 5 (optional)','text',''],
+    ['i6','Item 6 (optional)','text','']
   ],
-  result: [
-    ['bg','Background','swatch','black',BG_SWATCHES],
-    ['eyebrow','Program / group','text',''],
-    ['metric','Big number','text',''],
-    ['metriclabel','What the number means','textarea',''],
-    ['context','Context','textarea','']
-  ],
-  define: [
-    ['bg','Background','swatch','blue',BG_SWATCHES],
-    ['term','Term','text',''],
-    ['pos','Expansion','text',''],
-    ['def','Definition','textarea',''],
-    ['why','Why it matters','textarea','']
-  ],
-  progress: [
-    ['bg','Background','swatch','white',BG_SWATCHES],
-    ['title','Framework name','text',''],
-    ['p1t','Phase 1 title','text',''],
-    ['p1d','Phase 1 detail','textarea',''],
-    ['p2t','Phase 2 title','text',''],
-    ['p2d','Phase 2 detail','textarea',''],
-    ['p3t','Phase 3 title','text',''],
-    ['p3d','Phase 3 detail','textarea',''],
-    ['p4t','Phase 4 title','text',''],
-    ['p4d','Phase 4 detail','textarea','']
-  ],
-  photocover: [
-    ['photo','Background photo','image',''],
-    ['logo','Logo Color','swatch','white',LOGO_SWATCHES],
-    ['seriesTitle','Series title','text',''],
-    ['subtitle','Subtitle line','text',''],
-    ['wordmark','Wordmark','text','Chase Chavez']
-  ],
-  photobanner: [
-    ['photo','Background photo','image',''],
-    ['logo','Logo Color','swatch','white',LOGO_SWATCHES],
-    ['seriesLabel','Top series label','text',''],
-    ['headline','Bottom banner headline','textarea','']
-  ],
-  quotehighlight: [
-    ['photo','Background photo (optional)','image',''],
-    ['logo','Logo Color','swatch','white',LOGO_SWATCHES],
-    ['quote','Quote text (use \\n for breaks)','textarea',''],
+  quote: [
+    ...styleFields('black'),
+    ['quote','Quote text','textarea',''],
     ['attribution','Attribution','text','— Chase Chavez, PT · DPT · SCS']
   ],
-  article: [
-    ['bg','Background','swatch','white',BG_SWATCHES],
-    ['eyebrow','Eyebrow / tag (optional)','text',''],
-    ['headline','Headline','textarea',''],
-    ['body1','Paragraph 1','textarea',''],
-    ['body2','Paragraph 2 (optional)','textarea',''],
-    ['body3','Paragraph 3 (optional)','textarea','']
+  stat: [
+    ...styleFields('black'),
+    ['eyebrow','Eyebrow / label','text',''],
+    ['metric','Big number','text',''],
+    ['metriclabel','What the number means','textarea',''],
+    ['context','Context (optional)','textarea','']
   ],
-  extlist: [
-    ['bg','Background','swatch','black',BG_SWATCHES],
-    ['title','Headline','textarea',''],
-    ['i1','Item 1','textarea',''],
-    ['i2','Item 2','textarea',''],
-    ['i3','Item 3','textarea',''],
-    ['i4','Item 4','textarea',''],
-    ['i5','Item 5 (optional)','textarea',''],
-    ['i6','Item 6 (optional)','textarea','']
-  ],
-  qa: [
-    ['bg','Background','swatch','white',BG_SWATCHES],
-    ['title','Headline (optional)','text',''],
-    ['q1','Question 1','text',''],
-    ['a1','Answer 1','textarea',''],
-    ['q2','Question 2','text',''],
-    ['a2','Answer 2','textarea',''],
-    ['q3','Question 3 (optional)','text',''],
-    ['a3','Answer 3 (optional)','textarea','']
-  ],
-  twocol: [
-    ['bg','Background','swatch','white',BG_SWATCHES],
-    ['title','Headline','textarea',''],
+  split: [
+    ...styleFields('white'),
+    ['headline','Headline (optional)','textarea',''],
     ['col1h','Column 1 heading','text',''],
     ['col1body','Column 1 text','textarea',''],
     ['col2h','Column 2 heading','text',''],
     ['col2body','Column 2 text','textarea','']
-  ],
-  freetext: [
-    ['bg','Background','swatch','black',BG_SWATCHES],
-    ['logo','Logo Color','swatch','white',LOGO_SWATCHES],
-    ['placement','Graphic','select','corner',[
-      {value:'corner',label:'Corner Watermark'},
-      {value:'centered',label:'Centered'},
-      {value:'none',label:'None — just text'}
-    ]],
-    ['text','Your text','textarea','']
-  ],
-  nodegrid: [
-    ['text','Your text','textarea','']
-  ],
-  vectorslope: [
-    ['text','Your text','textarea','']
-  ],
-  splitcanvas: [
-    ['text','Your text','textarea','']
   ]
 };
-
-let currentPhoto = {}; // stores dataURL per layout key that uses photo
 
 const micIcon = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0H3a9 9 0 0 0 8 8.94V23h2v-3.06A9 9 0 0 0 21 11h-2z"/></svg>`;
 
@@ -706,9 +476,27 @@ function buildForm(){
   const type = document.getElementById('layoutSelect').value;
   const container = document.getElementById('formFields');
   container.innerHTML = '';
+  const styleFieldIds = ['bg','logo','placement','texture'];
+  let controlsWrap = null;
+
   schemas[type].forEach(([id,label,fieldType,defVal,options])=>{
     const wrap = document.createElement('div');
     wrap.className='field-group';
+
+    // Group the four style controls together under one visual heading.
+    if(styleFieldIds.includes(id)){
+      if(!controlsWrap){
+        controlsWrap = document.createElement('div');
+        controlsWrap.className = 'field-group controls-group';
+        const heading = document.createElement('div');
+        heading.className = 'controls-heading';
+        heading.textContent = 'Style';
+        controlsWrap.appendChild(heading);
+        container.appendChild(controlsWrap);
+      }
+      wrap.className = '';
+    }
+
     const lab = document.createElement('label');
     lab.textContent = label;
     wrap.appendChild(lab);
@@ -751,27 +539,11 @@ function buildForm(){
       row.className='input-row';
       const ta = document.createElement('textarea');
       ta.id = 'f_'+id;
-      ta.value = defVal.replace(/\\n/g,'\n');
+      ta.value = defVal;
       ta.oninput = renderSlide;
       row.appendChild(ta);
       if(speechSupported) row.appendChild(makeMicButton('f_'+id));
       wrap.appendChild(row);
-    } else if(fieldType==='image'){
-      const inp = document.createElement('input');
-      inp.type='file';
-      inp.accept='image/*';
-      inp.id='f_'+id;
-      inp.onchange = function(e){
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = function(ev){
-          currentPhoto[type] = ev.target.result;
-          renderSlide();
-        };
-        reader.readAsDataURL(file);
-      };
-      wrap.appendChild(inp);
     } else {
       const row = document.createElement('div');
       row.className='input-row';
@@ -784,7 +556,9 @@ function buildForm(){
       if(speechSupported) row.appendChild(makeMicButton('f_'+id));
       wrap.appendChild(row);
     }
-    container.appendChild(wrap);
+
+    if(styleFieldIds.includes(id)) controlsWrap.appendChild(wrap);
+    else container.appendChild(wrap);
   });
   renderSlide();
 }
@@ -883,265 +657,57 @@ function esc(s){
 function renderSlide(){
   const type = document.getElementById('layoutSelect').value;
   const el = document.getElementById('slidePreview');
+  const bg = val('bg');
+  const logo = val('logo');
+  const placement = val('placement');
+  const texture = val('texture');
   let html = '';
-  let bgStyle = '';
 
   switch(type){
-    case 'cover':
-      html = `
-        <div class="s-cover" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;${dynVarsStyle(val('bg'), val('logo'))}">
-          <div class="top">${nodeMarkWhite}<div class="brand-wordmark">${esc(val('wordmark'))}</div></div>
-          <div class="headline">${esc(val('title'))}</div>
-          <div class="tagline">${esc(val('tagline'))}</div>
-        </div>`;
+    case 'freetext':
+      html = buildSlideShell(bg, logo, placement, texture,
+        `<div class="free-text">${esc(val('text'))}</div>`,
+        placement === 'centered' ? 'center' : 'left');
       break;
-    case 'insight':
-      html = `
-        <div class="s-insight" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;${dynVarsStyle(val('bg'))}">
-          <div class="rule"><span></span><span></span></div>
-          <div class="headline">${esc(val('headline'))}</div>
-          <div class="body">${esc(val('body'))}</div>
-        </div>`;
+    case 'body':
+      html = buildSlideShell(bg, logo, placement, texture, `
+        <div class="headline">${esc(val('headline'))}</div>
+        <div class="body-p">${esc(val('body1'))}</div>
+        <div class="body-p">${esc(val('body2'))}</div>
+      `, 'left');
       break;
-    case 'breakdown':
-      html = `
-        <div class="s-breakdown" style="width:100%;height:100%;display:flex;flex-direction:column;${dynVarsStyle(val('bg'), val('logo'))}">
-          <div class="header-row"><div class="brand-wordmark">${esc(val('handle'))}</div>${nodeMarkWhite}</div>
-          <div class="title-bar"><h2>${esc(val('title'))}</h2></div>
-          <ul>
-            <li>${esc(val('b1'))}</li>
-            <li>${esc(val('b2'))}</li>
-            <li>${esc(val('b3'))}</li>
-            <li>${esc(val('b4'))}</li>
-          </ul>
-        </div>`;
-      break;
-    case 'bold':
-      html = `
-        <div class="s-bold" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;${dynVarsStyle(val('bg'))}">
-          <div class="headline">${esc(val('headline'))}</div>
-          <div>
-            <div class="sub">${esc(val('sub'))}</div>
-            <div class="brand-wordmark">${esc(val('wordmark'))}</div>
-          </div>
-        </div>`;
-      break;
-    case 'whyitmatters':
-      html = `
-        <div class="s-whyitmatters" style="width:100%;height:100%;display:flex;flex-direction:column;${dynVarsStyle(val('bg'))}">
-          <div class="top-rule"></div>
-          <h2>${esc(val('title'))}</h2>
-          <ul>
-            <li>${esc(val('b1'))}</li>
-            <li>${esc(val('b2'))}</li>
-            <li>${esc(val('b3'))}</li>
-            <li>${esc(val('b4'))}</li>
-          </ul>
-          <div class="brand-wordmark tagline-text">${esc(val('wordmark'))}</div>
-        </div>`;
+    case 'list':
+      html = buildSlideShell(bg, logo, placement, texture, `
+        <div class="headline">${esc(val('headline'))}</div>
+        ${buildBulletList([val('i1'),val('i2'),val('i3'),val('i4'),val('i5'),val('i6')], val('bulletStyle'))}
+      `, 'left');
       break;
     case 'quote':
-      html = `
-        <div class="s-quote" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;${dynVarsStyle(val('bg'))}">
-          <div class="label">Quote</div>
-          <div class="quote-text">${esc(val('quote'))}</div>
-          <div class="attribution">${esc(val('attribution'))}</div>
-        </div>`;
+      html = buildSlideShell(bg, logo, placement, texture, `
+        <div class="quote-text">${esc(val('quote'))}</div>
+        <div class="attribution">${esc(val('attribution'))}</div>
+      `, 'center');
       break;
-    case 'beforeafter':
-      html = `
-        <div class="s-beforeafter" style="width:100%;height:100%;display:flex;flex-direction:column;${dynVarsStyle(val('bg'))}">
-          <div class="header"><h2>${esc(val('title'))}</h2></div>
-          <div class="cols">
-            <div class="col before"><div class="col-label">Before</div><p>${esc(val('beforeP1'))}</p><p>${esc(val('beforeP2'))}</p></div>
-            <div class="col after"><div class="col-label">After</div><p>${esc(val('afterP1'))}</p><p>${esc(val('afterP2'))}</p></div>
-          </div>
-        </div>`;
+    case 'stat':
+      html = buildSlideShell(bg, logo, placement, texture, `
+        <div class="eyebrow">${esc(val('eyebrow'))}</div>
+        <div class="metric">${esc(val('metric'))}</div>
+        <div class="metric-label">${esc(val('metriclabel'))}</div>
+        <div class="context">${esc(val('context'))}</div>
+      `, 'left');
       break;
-    case 'mistake':
-      html = `
-        <div class="s-mistake" style="width:100%;height:100%;display:flex;flex-direction:column;${dynVarsStyle(val('bg'))}">
-          <h2>${esc(val('title'))}</h2>
-          <div class="row"><span class="tag wrong">Common</span><p>${esc(val('common'))}</p></div>
-          <div class="row"><span class="tag right">Better</span><p>${esc(val('better'))}</p></div>
-          <div class="row"><span class="tag right">Why</span><p>${esc(val('why'))}</p></div>
-          <div class="brand-wordmark">CHASE CHAVEZ · PT · DPT · SCS</div>
-        </div>`;
-      break;
-    case 'rts':
-      html = `
-        <div class="s-rts" style="width:100%;height:100%;display:flex;flex-direction:column;${dynVarsStyle(val('bg'))}">
-          <h2>${esc(val('title'))}</h2>
-          <ul>
-            <li><span class="box"></span>${esc(val('i1'))}</li>
-            <li><span class="box"></span>${esc(val('i2'))}</li>
-            <li><span class="box"></span>${esc(val('i3'))}</li>
-            <li><span class="box"></span>${esc(val('i4'))}</li>
-          </ul>
-          <div class="brand-wordmark tagline-text">Build what stays.</div>
-        </div>`;
-      break;
-    case 'result':
-      html = `
-        <div class="s-result" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;${dynVarsStyle(val('bg'))}">
-          <div class="eyebrow">${esc(val('eyebrow'))}</div>
-          <div>
-            <div class="metric">${esc(val('metric'))}</div>
-            <div class="metric-label">${esc(val('metriclabel'))}</div>
-          </div>
-          <div class="context">${esc(val('context'))}</div>
-        </div>`;
-      break;
-    case 'define':
-      html = `
-        <div class="s-define" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;${dynVarsStyle(val('bg'))}">
-          <div class="term">${esc(val('term'))}</div>
-          <div class="pos">${esc(val('pos'))}</div>
-          <div class="def">${esc(val('def'))}</div>
-          <div class="why">${esc(val('why'))}</div>
-        </div>`;
-      break;
-    case 'progress':
-      html = `
-        <div class="s-progress" style="width:100%;height:100%;display:flex;flex-direction:column;${dynVarsStyle(val('bg'))}">
-          <h2>${esc(val('title'))}</h2>
-          <div class="phase"><div class="phase-num">01</div><div><div class="phase-title">${esc(val('p1t'))}</div><div class="phase-detail">${esc(val('p1d'))}</div></div></div>
-          <div class="phase"><div class="phase-num">02</div><div><div class="phase-title">${esc(val('p2t'))}</div><div class="phase-detail">${esc(val('p2d'))}</div></div></div>
-          <div class="phase"><div class="phase-num">03</div><div><div class="phase-title">${esc(val('p3t'))}</div><div class="phase-detail">${esc(val('p3d'))}</div></div></div>
-          <div class="phase"><div class="phase-num">04</div><div><div class="phase-title">${esc(val('p4t'))}</div><div class="phase-detail">${esc(val('p4d'))}</div></div></div>
-        </div>`;
-      break;
-    case 'photocover':
-      bgStyle = currentPhoto['photocover'] ? `background-image:url(${currentPhoto['photocover']});${dynVarsStyle(null, val('logo'))}` : `background-color:#333;${dynVarsStyle(null, val('logo'))}`;
-      html = `
-        <div class="s-photocover" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
-          <div class="top-block">
-            <div class="series-title">${esc(val('seriesTitle'))}</div>
-            <div class="subtitle">${esc(val('subtitle'))}</div>
-          </div>
-          <div class="bottom-block">${nodeMarkWhite}<div class="brand-wordmark">${esc(val('wordmark'))}</div></div>
-        </div>`;
-      break;
-    case 'photobanner':
-      bgStyle = currentPhoto['photobanner'] ? `background-image:url(${currentPhoto['photobanner']});${dynVarsStyle(null, val('logo'))}` : `background-color:#333;${dynVarsStyle(null, val('logo'))}`;
-      html = `
-        <div class="s-photobanner" style="width:100%;height:100%;display:flex;flex-direction:column;">
-          <div class="top-row">${nodeMarkWhite}<div class="series-label">${esc(val('seriesLabel'))}</div></div>
-          <div class="spacer"></div>
-          <div class="banner"><h2>${esc(val('headline'))}</h2></div>
-        </div>`;
-      break;
-    case 'quotehighlight':
-      bgStyle = currentPhoto['quotehighlight'] ? `background-image:url(${currentPhoto['quotehighlight']});${dynVarsStyle(null, val('logo'))}` : `background-color:#0A0A0A;${dynVarsStyle(null, val('logo'))}`;
-      html = `
-        <div class="s-quotehighlight" style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">
-          <div class="top-row">${nodeMarkWhite}<div class="brand-wordmark">CHASE CHAVEZ</div></div>
-          <div class="quote-highlight">${esc(val('quote'))}</div>
-          <div class="attribution">${esc(val('attribution'))}</div>
-        </div>`;
-      break;
-    case 'article':
-      html = `
-        <div class="s-article" style="width:100%;height:100%;display:flex;flex-direction:column;${dynVarsStyle(val('bg'))}">
-          <div class="eyebrow">${esc(val('eyebrow'))}</div>
-          <div class="headline">${esc(val('headline'))}</div>
-          <p>${esc(val('body1'))}</p>
-          <p>${esc(val('body2'))}</p>
-          <p>${esc(val('body3'))}</p>
-        </div>`;
-      break;
-    case 'extlist':
-      html = `
-        <div class="s-extlist" style="width:100%;height:100%;display:flex;flex-direction:column;${dynVarsStyle(val('bg'))}">
-          <h2>${esc(val('title'))}</h2>
-          <ol>
-            <li>${esc(val('i1'))}</li>
-            <li>${esc(val('i2'))}</li>
-            <li>${esc(val('i3'))}</li>
-            <li>${esc(val('i4'))}</li>
-            <li>${esc(val('i5'))}</li>
-            <li>${esc(val('i6'))}</li>
-          </ol>
-        </div>`;
-      break;
-    case 'qa':
-      html = `
-        <div class="s-qa" style="width:100%;height:100%;display:flex;flex-direction:column;${dynVarsStyle(val('bg'))}">
-          <h2>${esc(val('title'))}</h2>
-          <div class="pair"><div class="q">${esc(val('q1'))}</div><div class="a">${esc(val('a1'))}</div></div>
-          <div class="pair"><div class="q">${esc(val('q2'))}</div><div class="a">${esc(val('a2'))}</div></div>
-          <div class="pair"><div class="q">${esc(val('q3'))}</div><div class="a">${esc(val('a3'))}</div></div>
-        </div>`;
-      break;
-    case 'twocol':
-      html = `
-        <div class="s-twocol" style="width:100%;height:100%;display:flex;flex-direction:column;${dynVarsStyle(val('bg'))}">
-          <h2>${esc(val('title'))}</h2>
-          <div class="cols">
-            <div class="col"><div class="col-h">${esc(val('col1h'))}</div><p>${esc(val('col1body'))}</p></div>
-            <div class="col"><div class="col-h">${esc(val('col2h'))}</div><p>${esc(val('col2body'))}</p></div>
-          </div>
-        </div>`;
-      break;
-    case 'freetext': {
-      const bgClassMap = {blue:'s-openblue', teal:'s-openteal', bone:'s-openbone', black:'s-openblack', slate:'s-openslate', white:'s-openwhite'};
-      const bgKey = val('bg') || 'black';
-      const bgClass = bgClassMap[bgKey] || 's-openblack';
-      const logoColorMap = {white:'#fff', blue:'#005F87', bone:'#F1EDE6'};
-      const armColor = logoColorMap[val('logo')] || '#fff';
-      // Terminal nodes must always stay visible against the field — on a teal
-      // background they invert to Athletic Blue per the brand book's colourway rule.
-      const terminalColor = bgKey === 'teal' ? '#005F87' : '#00B8B8';
-      const placement = val('placement') || 'corner';
-      let graphic = '', placementClass = '';
-      if(placement === 'corner'){
-        graphic = nodeMarkBig(armColor, terminalColor);
-      } else if(placement === 'centered'){
-        graphic = nodeMarkBig(armColor, terminalColor, 'node-mark-center');
-        placementClass = ' center-placement';
-      }
-      html = `
-        <div class="s-open ${bgClass}${placementClass}" style="width:100%;height:100%;display:flex;flex-direction:column;">
-          ${graphic}
-          <div class="free-text">${esc(val('text'))}</div>
-        </div>`;
-      break;
-    }
-    case 'nodegrid':
-      html = `
-        <div class="s-nodegrid" style="width:100%;height:100%;display:flex;flex-direction:column;">
-          <div class="texture-band nodegrid"></div>
-          <div class="band-content">
-            ${nodeMarkWhite}
-            <div class="free-text">${esc(val('text'))}</div>
-          </div>
-        </div>`;
-      break;
-    case 'vectorslope':
-      html = `
-        <div class="s-vectorslope" style="width:100%;height:100%;display:flex;flex-direction:column;">
-          <div class="band-content">
-            ${nodeMarkWhite}
-            <div class="free-text">${esc(val('text'))}</div>
-          </div>
-          <div class="texture-band vectorslope"></div>
-        </div>`;
-      break;
-    case 'splitcanvas':
-      html = `
-        <div class="s-splitcanvas" style="width:100%;height:100%;display:flex;flex-direction:column;">
-          <div class="cols">
-            <div class="col blue"></div>
-            <div class="col bone">
-              ${nodeMarkBig('#005F87','#00B8B8','node-mark-sm')}
-              <div class="free-text">${esc(val('text'))}</div>
-            </div>
-          </div>
-        </div>`;
+    case 'split':
+      html = buildSlideShell(bg, logo, placement, texture, `
+        <div class="headline">${esc(val('headline'))}</div>
+        <div class="split-cols">
+          <div class="split-col"><div class="split-col-h">${esc(val('col1h'))}</div><p>${esc(val('col1body'))}</p></div>
+          <div class="split-col"><div class="split-col-h">${esc(val('col2h'))}</div><p>${esc(val('col2body'))}</p></div>
+        </div>
+      `, 'left');
       break;
   }
 
-  el.style.cssText = bgStyle;
+  el.style.cssText = '';
   el.innerHTML = html;
 }
 
