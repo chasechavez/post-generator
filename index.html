@@ -296,6 +296,14 @@ const LOGO_SWATCHES = [
   {value:'blue',label:'Athletic Blue',color:'#005F87'},
   {value:'bone',label:'Bone',color:'#F1EDE6'}
 ];
+const TEXT_SWATCHES = [
+  {value:'auto',label:'Auto (best contrast)',color:'linear-gradient(135deg, #fff 50%, #0A0A0A 50%)'},
+  {value:'white',label:'White',color:'#FFFFFF'},
+  {value:'black',label:'Near Black',color:'#0A0A0A'},
+  {value:'blue',label:'Athletic Blue',color:'#005F87'},
+  {value:'teal',label:'Performance Teal',color:'#00B8B8'},
+  {value:'slate',label:'Warm Slate',color:'#565A5C'}
+];
 const PLACEMENT_OPTIONS = [
   {value:'corner',label:'Corner Watermark'},
   {value:'centered',label:'Centered Above Text'},
@@ -329,13 +337,22 @@ const BG_TEXT_PAIR = {
   white: {text:'#0A0A0A', soft:'rgba(10,10,10,0.65)'}
 };
 const LOGO_ARM_CSS = {white:'#fff', blue:'#005F87', bone:'#F1EDE6'};
+const TEXT_COLOR_PAIR = {
+  white: {text:'#fff', soft:'rgba(255,255,255,0.7)'},
+  black: {text:'#0A0A0A', soft:'rgba(10,10,10,0.65)'},
+  blue:  {text:'#005F87', soft:'rgba(0,95,135,0.75)'},
+  teal:  {text:'#00B8B8', soft:'rgba(0,184,184,0.75)'},
+  slate: {text:'#565A5C', soft:'rgba(86,90,92,0.75)'}
+};
 
 // Builds the inline --dyn-bg/--dyn-text/--logo-* custom properties for a slide wrapper.
 // Terminal nodes always invert to Athletic Blue on a teal background per the brand book.
-function dynVarsStyle(bgKey, logoKey){
+// textKey overrides the auto-contrast text color computed from bgKey when set to
+// anything other than 'auto'.
+function dynVarsStyle(bgKey, logoKey, textKey){
   let css = '';
   if(bgKey){
-    const pair = BG_TEXT_PAIR[bgKey] || BG_TEXT_PAIR.black;
+    const pair = (textKey && textKey !== 'auto' && TEXT_COLOR_PAIR[textKey]) || BG_TEXT_PAIR[bgKey] || BG_TEXT_PAIR.black;
     css += `--dyn-bg:${BG_COLOR_CSS[bgKey] || BG_COLOR_CSS.black};--dyn-text:${pair.text};--dyn-text-soft:${pair.soft};`;
   }
   if(logoKey){
@@ -360,8 +377,8 @@ function nodeMarkSvg(armHub, terminal, extraClass){
 
 // Builds the full slide wrapper for any content shape: background, logo (in whichever
 // placement was chosen, including textured bands), and the shape-specific inner HTML.
-function buildSlideShell(bgKey, logoKey, placement, textureKey, contentHtml, align){
-  const styleVars = dynVarsStyle(bgKey, logoKey);
+function buildSlideShell(bgKey, logoKey, placement, textureKey, contentHtml, align, textKey){
+  const styleVars = dynVarsStyle(bgKey, logoKey, textKey);
   const showLogo = !!logoKey && placement && placement !== 'none';
   const armVar = 'var(--logo-arm, #fff)';
   const termVar = 'var(--logo-terminal, #00B8B8)';
@@ -402,6 +419,7 @@ function buildBulletList(items, style){
 function styleFields(bgDefault){
   return [
     ['bg','Background','swatch',bgDefault,BG_SWATCHES],
+    ['textColor','Text Color','swatch','auto',TEXT_SWATCHES],
     ['logo','Logo Color','swatch','white',LOGO_SWATCHES],
     ['placement','Logo Placement','select','corner',PLACEMENT_OPTIONS],
     ['texture','Texture Style (for textured band)','select','nodegrid',TEXTURE_OPTIONS]
@@ -476,7 +494,7 @@ function buildForm(){
   const type = document.getElementById('layoutSelect').value;
   const container = document.getElementById('formFields');
   container.innerHTML = '';
-  const styleFieldIds = ['bg','logo','placement','texture'];
+  const styleFieldIds = ['bg','textColor','logo','placement','texture'];
   let controlsWrap = null;
 
   schemas[type].forEach(([id,label,fieldType,defVal,options])=>{
@@ -661,32 +679,33 @@ function renderSlide(){
   const logo = val('logo');
   const placement = val('placement');
   const texture = val('texture');
+  const textColor = val('textColor');
   let html = '';
 
   switch(type){
     case 'freetext':
       html = buildSlideShell(bg, logo, placement, texture,
         `<div class="free-text">${esc(val('text'))}</div>`,
-        placement === 'centered' ? 'center' : 'left');
+        placement === 'centered' ? 'center' : 'left', textColor);
       break;
     case 'body':
       html = buildSlideShell(bg, logo, placement, texture, `
         <div class="headline">${esc(val('headline'))}</div>
         <div class="body-p">${esc(val('body1'))}</div>
         <div class="body-p">${esc(val('body2'))}</div>
-      `, 'left');
+      `, 'left', textColor);
       break;
     case 'list':
       html = buildSlideShell(bg, logo, placement, texture, `
         <div class="headline">${esc(val('headline'))}</div>
         ${buildBulletList([val('i1'),val('i2'),val('i3'),val('i4'),val('i5'),val('i6')], val('bulletStyle'))}
-      `, 'left');
+      `, 'left', textColor);
       break;
     case 'quote':
       html = buildSlideShell(bg, logo, placement, texture, `
         <div class="quote-text">${esc(val('quote'))}</div>
         <div class="attribution">${esc(val('attribution'))}</div>
-      `, 'center');
+      `, 'center', textColor);
       break;
     case 'stat':
       html = buildSlideShell(bg, logo, placement, texture, `
@@ -694,7 +713,7 @@ function renderSlide(){
         <div class="metric">${esc(val('metric'))}</div>
         <div class="metric-label">${esc(val('metriclabel'))}</div>
         <div class="context">${esc(val('context'))}</div>
-      `, 'left');
+      `, 'left', textColor);
       break;
     case 'split':
       html = buildSlideShell(bg, logo, placement, texture, `
@@ -703,7 +722,7 @@ function renderSlide(){
           <div class="split-col"><div class="split-col-h">${esc(val('col1h'))}</div><p>${esc(val('col1body'))}</p></div>
           <div class="split-col"><div class="split-col-h">${esc(val('col2h'))}</div><p>${esc(val('col2body'))}</p></div>
         </div>
-      `, 'left');
+      `, 'left', textColor);
       break;
   }
 
