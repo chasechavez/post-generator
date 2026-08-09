@@ -154,6 +154,24 @@
   .download-btn:hover{background:#004a6b;}
   .download-btn.done{background:var(--performance-teal);}
 
+  .reset-pos-btn{
+    display:block;
+    width:100%;
+    margin-top:16px;
+    background:#fff;
+    color:var(--warm-slate);
+    border:1px solid #ccc;
+    padding:10px 0;
+    border-radius:4px;
+    font-family:'Barlow Condensed', Arial, sans-serif;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .reset-pos-btn:hover{border-color:var(--athletic-blue);color:var(--athletic-blue);}
+
   .reset-note{
     font-size:11px;
     color:var(--warm-slate);
@@ -194,6 +212,10 @@
 
   .shell-content{position:relative;z-index:1;flex:1;padding:52px 46px;display:flex;flex-direction:column;width:100%;min-height:0;}
   .shell-content.center-text{justify-content:center;align-items:center;text-align:center;}
+
+  [data-block]{cursor:move;touch-action:none;user-select:none;-webkit-user-select:none;border-radius:3px;transition:box-shadow 0.1s;}
+  [data-block]:hover{box-shadow:0 0 0 1.5px rgba(0,184,184,0.55);}
+  [data-block].dragging{box-shadow:0 0 0 1.5px var(--performance-teal);z-index:5;position:relative;}
 
   .texture-band{flex-shrink:0;height:74px;display:flex;align-items:center;padding:0 26px;background-color:var(--dyn-bg, var(--near-black));}
   .texture-band.nodegrid{background-image:radial-gradient(circle, rgba(0,184,184,0.4) 1.5px, transparent 1.5px);background-size:20px 20px;}
@@ -269,7 +291,8 @@
     <div id="formFields"></div>
 
     <button class="download-btn" onclick="downloadSlide()">Download PNG</button>
-    <div class="reset-note">Tap the mic next to any field to dictate instead of typing. Background, logo, and placement combine freely — mix and match for as many looks as you need. Refresh the page to start fully clean.</div>
+    <button class="reset-pos-btn" onclick="resetBlockPositions()">Reset Text Positions</button>
+    <div class="reset-note">Drag any text block on the preview to move it. Tap the mic next to any field to dictate instead of typing. Background, logo, and placement combine freely — mix and match for as many looks as you need. Refresh the page to start fully clean.</div>
   </div>
 
   <!-- ================= RIGHT PANEL / PREVIEW ================= -->
@@ -479,6 +502,7 @@ const speechSupported = !!(window.SpeechRecognition || window.webkitSpeechRecogn
 
 function buildForm(){
   stopRecognition();
+  blockPositions = {};
   const headlineScaleInput = document.getElementById('headlineScale');
   const bodyScaleInput = document.getElementById('bodyScale');
   if(headlineScaleInput){
@@ -538,7 +562,7 @@ function buildForm(){
           row.dataset.value = opt.value;
           row.querySelectorAll('.swatch-btn').forEach(function(b){ b.classList.remove('active'); });
           btn.classList.add('active');
-          renderSlide();
+          scheduleRender();
         };
         row.appendChild(btn);
       });
@@ -553,7 +577,7 @@ function buildForm(){
         if(opt.value===defVal) o.selected = true;
         sel.appendChild(o);
       });
-      sel.onchange = renderSlide;
+      sel.onchange = scheduleRender;
       wrap.appendChild(sel);
     } else if(fieldType==='textarea'){
       const row = document.createElement('div');
@@ -561,7 +585,7 @@ function buildForm(){
       const ta = document.createElement('textarea');
       ta.id = 'f_'+id;
       ta.value = defVal;
-      ta.oninput = renderSlide;
+      ta.oninput = scheduleRender;
       row.appendChild(ta);
       if(speechSupported) row.appendChild(makeMicButton('f_'+id));
       wrap.appendChild(row);
@@ -572,7 +596,7 @@ function buildForm(){
       inp.type='text';
       inp.id='f_'+id;
       inp.value = defVal;
-      inp.oninput = renderSlide;
+      inp.oninput = scheduleRender;
       row.appendChild(inp);
       if(speechSupported) row.appendChild(makeMicButton('f_'+id));
       wrap.appendChild(row);
@@ -623,7 +647,7 @@ function initRecognition(){
     const el = document.getElementById(activeFieldId);
     if(el){
       el.value = (baseTextForRecognition + ' ' + interimText).trim();
-      renderSlide();
+      scheduleRender();
     }
   };
   r.onend = function(){
@@ -675,6 +699,66 @@ function esc(s){
   return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+// Rapid-fire input (fast typing, a dragged slider) used to trigger one full slide
+// rebuild per event. Coalescing to one rebuild per animation frame keeps typing and
+// dragging smooth instead of fighting the browser for every keystroke/tick.
+let renderQueued = false;
+function scheduleRender(){
+  if(renderQueued) return;
+  renderQueued = true;
+  requestAnimationFrame(function(){
+    renderQueued = false;
+    renderSlide();
+  });
+}
+
+/* ===== BLOCK REPOSITIONING ===== */
+// Drag any text block to move it. Offsets are keyed by data-block id and kept
+// per shape; switching shapes clears them. Dragging moves via a CSS transform
+// (no layout reflow) so it stays smooth, and the offset is re-applied after
+// every re-render so typing doesn't snap a moved block back to its default spot.
+let blockPositions = {};
+
+function applyBlockPositions(){
+  document.querySelectorAll('#slidePreview [data-block]').forEach(function(node){
+    const pos = blockPositions[node.dataset.block];
+    node.style.transform = pos ? `translate(${pos.x}px, ${pos.y}px)` : '';
+  });
+}
+
+function enableBlockDragging(){
+  document.querySelectorAll('#slidePreview [data-block]').forEach(function(node){
+    node.onpointerdown = function(e){
+      e.preventDefault();
+      const id = node.dataset.block;
+      const start = blockPositions[id] || {x:0, y:0};
+      const startX = e.clientX, startY = e.clientY;
+      node.classList.add('dragging');
+      node.setPointerCapture(e.pointerId);
+
+      const onMove = function(ev){
+        const dx = ev.clientX - startX;
+        const dy = ev.clientY - startY;
+        const next = {x: start.x + dx, y: start.y + dy};
+        node.style.transform = `translate(${next.x}px, ${next.y}px)`;
+        blockPositions[id] = next;
+      };
+      const onUp = function(){
+        node.classList.remove('dragging');
+        node.removeEventListener('pointermove', onMove);
+        node.removeEventListener('pointerup', onUp);
+      };
+      node.addEventListener('pointermove', onMove);
+      node.addEventListener('pointerup', onUp);
+    };
+  });
+}
+
+function resetBlockPositions(){
+  blockPositions = {};
+  renderSlide();
+}
+
 function renderSlide(){
   const type = document.getElementById('layoutSelect').value;
   const el = document.getElementById('slidePreview');
@@ -689,40 +773,40 @@ function renderSlide(){
   switch(type){
     case 'freetext':
       html = buildSlideShell(bg, logo, placement, texture,
-        `<div class="free-text">${esc(val('text'))}</div>`,
+        `<div class="free-text" data-block="text">${esc(val('text'))}</div>`,
         placement === 'centered' ? 'center' : 'left', headlineColor, bodyColor);
       break;
     case 'body':
       html = buildSlideShell(bg, logo, placement, texture, `
-        <div class="headline">${esc(val('headline'))}</div>
-        <div class="body-p">${esc(val('body1'))}</div>
-        <div class="body-p">${esc(val('body2'))}</div>
+        <div class="headline" data-block="headline">${esc(val('headline'))}</div>
+        <div class="body-p" data-block="body1">${esc(val('body1'))}</div>
+        <div class="body-p" data-block="body2">${esc(val('body2'))}</div>
       `, 'left', headlineColor, bodyColor);
       break;
     case 'list':
       html = buildSlideShell(bg, logo, placement, texture, `
-        <div class="headline">${esc(val('headline'))}</div>
-        ${buildBulletList([val('i1'),val('i2'),val('i3'),val('i4'),val('i5'),val('i6')], val('bulletStyle'))}
+        <div class="headline" data-block="headline">${esc(val('headline'))}</div>
+        <div data-block="list">${buildBulletList([val('i1'),val('i2'),val('i3'),val('i4'),val('i5'),val('i6')], val('bulletStyle'))}</div>
       `, 'left', headlineColor, bodyColor);
       break;
     case 'quote':
       html = buildSlideShell(bg, logo, placement, texture, `
-        <div class="quote-text">${esc(val('quote'))}</div>
-        <div class="attribution">${esc(val('attribution'))}</div>
+        <div class="quote-text" data-block="quote">${esc(val('quote'))}</div>
+        <div class="attribution" data-block="attribution">${esc(val('attribution'))}</div>
       `, 'center', headlineColor, bodyColor);
       break;
     case 'stat':
       html = buildSlideShell(bg, logo, placement, texture, `
-        <div class="eyebrow">${esc(val('eyebrow'))}</div>
-        <div class="metric">${esc(val('metric'))}</div>
-        <div class="metric-label">${esc(val('metriclabel'))}</div>
-        <div class="context">${esc(val('context'))}</div>
+        <div class="eyebrow" data-block="eyebrow">${esc(val('eyebrow'))}</div>
+        <div class="metric" data-block="metric">${esc(val('metric'))}</div>
+        <div class="metric-label" data-block="metriclabel">${esc(val('metriclabel'))}</div>
+        <div class="context" data-block="context">${esc(val('context'))}</div>
       `, 'left', headlineColor, bodyColor);
       break;
     case 'split':
       html = buildSlideShell(bg, logo, placement, texture, `
-        <div class="headline">${esc(val('headline'))}</div>
-        <div class="split-cols">
+        <div class="headline" data-block="headline">${esc(val('headline'))}</div>
+        <div class="split-cols" data-block="cols">
           <div class="split-col"><div class="split-col-h">${esc(val('col1h'))}</div><p>${esc(val('col1body'))}</p></div>
           <div class="split-col"><div class="split-col-h">${esc(val('col2h'))}</div><p>${esc(val('col2body'))}</p></div>
         </div>
@@ -732,6 +816,8 @@ function renderSlide(){
 
   el.style.cssText = '';
   el.innerHTML = html;
+  applyBlockPositions();
+  enableBlockDragging();
 }
 
 function isIOS(){
