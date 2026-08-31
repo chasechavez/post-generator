@@ -91,6 +91,11 @@
   }
   textarea{resize:vertical;min-height:56px;}
   select{cursor:pointer;}
+  input[type=range]{
+    touch-action:pan-x;
+    -webkit-user-select:none;
+    user-select:none;
+  }
 
   .field-group{
     border-top:1px dashed #ddd;
@@ -204,7 +209,7 @@
 
   /* ===== UNIFIED SLIDE SHELL ===== */
   .s-shell{padding:0;position:relative;background:var(--dyn-bg, var(--near-black));}
-  .s-shell .node-mark-bg{position:absolute;bottom:-30px;right:-30px;width:280px;height:280px;opacity:0.14;pointer-events:none;}
+  .s-shell .node-mark-bg{position:absolute;bottom:-30px;right:-30px;width:280px;height:280px;opacity:0.32;pointer-events:none;}
   .node-mark-center{width:78px;height:78px;flex-shrink:0;margin:0 auto 22px;display:block;}
   .shell-top-row{display:flex;margin-bottom:18px;}
   .shell-top-row.left{justify-content:flex-start;}
@@ -442,11 +447,14 @@ function buildBulletList(items, style){
 
 // Fields every content shape shares: background, logo color/placement, texture style.
 function styleFields(bgDefault){
+  // Light backgrounds need a dark logo mark to read as anything but a smudge —
+  // white-on-white was the "can't see the logo" complaint.
+  const logoDefault = (bgDefault === 'white' || bgDefault === 'bone') ? 'blue' : 'white';
   return [
     ['bg','Background','swatch',bgDefault,BG_SWATCHES],
     ['headlineColor','Headline Color','swatch','auto',TEXT_SWATCHES],
     ['bodyColor','Body Color','swatch','auto',TEXT_SWATCHES],
-    ['logo','Logo Color','swatch','white',LOGO_SWATCHES],
+    ['logo','Logo Color','swatch',logoDefault,LOGO_SWATCHES],
     ['placement','Logo Placement','select','corner',PLACEMENT_OPTIONS],
     ['texture','Texture Style (for textured band)','select','nodegrid',TEXTURE_OPTIONS]
   ];
