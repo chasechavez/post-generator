@@ -217,10 +217,9 @@
   [data-block]:hover{box-shadow:0 0 0 1.5px rgba(0,184,184,0.55);}
   [data-block].dragging{box-shadow:0 0 0 1.5px var(--performance-teal);z-index:5;position:relative;}
 
-  .texture-band{flex-shrink:0;height:74px;display:flex;align-items:center;padding:0 26px;background-color:var(--dyn-bg, var(--near-black));}
-  .texture-band.nodegrid{background-image:radial-gradient(circle, rgba(0,184,184,0.4) 1.5px, transparent 1.5px);background-size:20px 20px;}
-  .texture-band.vectorslope{background-image:repeating-linear-gradient(135deg, rgba(0,184,184,0.28) 0px, rgba(0,184,184,0.28) 1.5px, transparent 1.5px, transparent 24px);}
-  .texture-band.pitchlines{background-image:repeating-linear-gradient(180deg, rgba(0,184,184,0.22) 0px, rgba(0,184,184,0.22) 1px, transparent 1px, transparent 9px);}
+  .texture-band{position:relative;overflow:hidden;flex-shrink:0;height:74px;display:flex;align-items:center;padding:0 26px;background-color:var(--dyn-bg, var(--near-black));}
+  .texture-pattern{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;}
+  .texture-band-mark{position:relative;z-index:1;display:flex;align-items:center;}
 
   /* --- content elements (shared across all shapes) --- */
   .shell-content .headline{font-family:'Barlow Condensed';font-weight:700;font-size:calc(34px * var(--headline-scale));line-height:1.08;text-transform:uppercase;color:var(--dyn-text, #fff);margin-bottom:16px;white-space:pre-wrap;}
@@ -388,6 +387,30 @@ function dynVarsStyle(bgKey, logoKey, headlineKey, bodyKey){
   return css;
 }
 
+// Textured-band fill patterns, drawn as a real tiled SVG rather than a CSS
+// background gradient. html2canvas (used for Download PNG / Copy Image) does
+// not reliably rasterize CSS radial/repeating-linear gradients, so the band
+// exported to PNG could come out as a flat strip with no dots/lines — an SVG
+// <pattern> is a real element html2canvas paints like any other shape.
+function texturePatternSvg(type){
+  const id = 'tp-' + type + '-' + Math.random().toString(36).slice(2, 8);
+  let defs;
+  if(type === 'vectorslope'){
+    defs = `<pattern id="${id}" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(135)">
+      <line x1="0" y1="0" x2="0" y2="24" stroke="rgba(0,184,184,0.28)" stroke-width="1.5"/>
+    </pattern>`;
+  } else if(type === 'pitchlines'){
+    defs = `<pattern id="${id}" width="9" height="9" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="9" height="1" fill="rgba(0,184,184,0.22)"/>
+    </pattern>`;
+  } else {
+    defs = `<pattern id="${id}" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="1.5" fill="rgba(0,184,184,0.4)"/>
+    </pattern>`;
+  }
+  return `<svg class="texture-pattern" xmlns="http://www.w3.org/2000/svg"><defs>${defs}</defs><rect width="100%" height="100%" fill="url(#${id})"/></svg>`;
+}
+
 function nodeMarkSvg(armHub, terminal, extraClass){
   return `<svg class="${extraClass || 'node-mark-bg'}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <line x1="50" y1="50" x2="50" y2="12" stroke="${armHub}" stroke-width="4"/>
@@ -411,7 +434,8 @@ function buildSlideShell(bgKey, logoKey, placement, textureKey, contentHtml, ali
 
   if(showLogo && (placement === 'texture-top' || placement === 'texture-bottom')){
     const mark = nodeMarkSvg(armVar, termVar, 'node-mark-sm');
-    const band = `<div class="texture-band ${textureKey || 'nodegrid'}">${mark}</div>`;
+    const pattern = texturePatternSvg(textureKey || 'nodegrid');
+    const band = `<div class="texture-band">${pattern}<span class="texture-band-mark">${mark}</span></div>`;
     const body = `<div class="${contentClass}">${contentHtml}</div>`;
     const inner = placement === 'texture-top' ? band + body : body + band;
     return `<div class="s-shell" style="width:100%;height:100%;display:flex;flex-direction:column;${styleVars}">${inner}</div>`;
