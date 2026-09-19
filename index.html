@@ -428,8 +428,10 @@ function nodeMarkSvg(armHub, terminal, extraClass){
 function buildSlideShell(bgKey, logoKey, placement, textureKey, contentHtml, align, headlineKey, bodyKey){
   const styleVars = dynVarsStyle(bgKey, logoKey, headlineKey, bodyKey);
   const showLogo = !!logoKey && placement && placement !== 'none';
-  const armVar = 'var(--logo-arm, #fff)';
-  const termVar = 'var(--logo-terminal, #00B8B8)';
+  // Concrete colors, not var(): html2canvas serializes each SVG to a standalone image where
+  // CSS custom properties don't resolve, which made the mark vanish in downloaded PNGs.
+  const armVar = LOGO_ARM_CSS[logoKey] || '#fff';
+  const termVar = bgKey === 'teal' ? '#005F87' : '#00B8B8';
   const contentClass = 'shell-content' + (align === 'center' ? ' center-text' : '');
 
   if(showLogo && (placement === 'texture-top' || placement === 'texture-bottom')){
@@ -848,11 +850,71 @@ function isIOS(){
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 }
 
+// html2canvas drops (or mangles) an SVG that is absolutely positioned past the slide edge,
+// which is how the corner watermark is placed. So the corner mark is left out of the
+// html2canvas pass and painted directly onto the canvas underneath the rendered content.
+function drawCornerMark(ctx, m, s){
+  const k = m.size * s / 100;
+  const X = v => (m.x * s) + v * k;
+  const Y = v => (m.y * s) + v * k;
+  ctx.save();
+  ctx.globalAlpha = m.opacity;
+  ctx.strokeStyle = m.arm;
+  ctx.lineWidth = 4 * k;
+  ctx.lineCap = 'butt';
+  [[50,12],[82,68],[18,68]].forEach(([x,y])=>{
+    ctx.beginPath(); ctx.moveTo(X(50), Y(50)); ctx.lineTo(X(x), Y(y)); ctx.stroke();
+  });
+  ctx.fillStyle = m.term;
+  [[50,12],[82,68],[18,68]].forEach(([x,y])=>{
+    ctx.beginPath(); ctx.arc(X(x), Y(y), 8.4*k, 0, Math.PI*2); ctx.fill();
+  });
+  ctx.fillStyle = m.arm;
+  ctx.beginPath(); ctx.arc(X(50), Y(50), 6*k, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
 function downloadSlide(){
   const node = document.getElementById('slidePreview');
   const btn = document.querySelector('.download-btn');
   const original = btn.textContent;
-  html2canvas(node, {scale: 1080/node.offsetWidth, useCORS:true}).then(canvas=>{
+  const scale = 1080/node.offsetWidth;
+
+  const markEl = node.querySelector('svg.node-mark-bg');
+  let mark = null, shellBg = null;
+  if(markEl){
+    const nr = node.getBoundingClientRect(), mr = markEl.getBoundingClientRect();
+    mark = {
+      x: mr.left - nr.left, y: mr.top - nr.top, size: mr.width,
+      arm: markEl.querySelector('line').getAttribute('stroke'),
+      term: markEl.querySelector('circle').getAttribute('fill'),
+      opacity: parseFloat(getComputedStyle(markEl).opacity)
+    };
+    shellBg = getComputedStyle(node.querySelector('.s-shell')).backgroundColor;
+  }
+
+  html2canvas(node, {
+    scale, useCORS:true,
+    backgroundColor: mark ? null : undefined,
+    ignoreElements: el => mark && el === markEl,
+    onclone: doc => {
+      if(!mark) return;
+      // transparent background so the mark can be composited beneath the content
+      const slide = doc.getElementById('slidePreview');
+      slide.style.background = 'transparent';
+      slide.querySelector('.s-shell').style.background = 'transparent';
+    }
+  }).then(rendered=>{
+    let canvas = rendered;
+    if(mark){
+      canvas = document.createElement('canvas');
+      canvas.width = rendered.width; canvas.height = rendered.height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = shellBg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawCornerMark(ctx, mark, canvas.width / node.offsetWidth);
+      ctx.drawImage(rendered, 0, 0);
+    }
     const dataUrl = canvas.toDataURL('image/png');
     if(isIOS()){
       // iOS Safari ignores the download attribute — open the image so the user can long-press to save it
